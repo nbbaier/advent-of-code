@@ -1,3 +1,4 @@
+import type { ReplacerFn } from "@/types";
 import fs from "node:fs";
 import path from "node:path";
 
@@ -33,9 +34,7 @@ export async function downloadInput(year: string, day: string) {
 	}
 }
 
-type Replacer = (input: string, rule: { in: string | RegExp; out: string }) => string;
-
-const defaultReplacer: Replacer = (
+const defaultReplacer: ReplacerFn = (
 	input: string,
 	rule: { in: string | RegExp; out: string },
 ) => {
@@ -50,7 +49,7 @@ export async function createFromTemplate(
 	},
 	replacers?: {
 		rule: { in: string | RegExp; out: string };
-		fn?: Replacer;
+		fn?: ReplacerFn;
 	}[],
 ) {
 	const templateText = loadFile(path.resolve("./aoc/templates", `${template}.template.ts`));
