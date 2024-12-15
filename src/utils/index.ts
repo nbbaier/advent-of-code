@@ -74,3 +74,10 @@ export async function createFromTemplate(
 
 	return await Bun.write(targetPath, output);
 }
+
+export function getMiddleIndex<T>(arr: T[]): number | null {
+	if (arr.length === 0) {
+		return null;
+	}
+	return Math.floor(arr.length / 2);
+}
