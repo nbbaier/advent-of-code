@@ -16,7 +16,13 @@ const examples1: TestData[] = [
 	{ input: "haegwjzuvuyypxyu", output: 0 },
 	{ input: "dvszwmarrgswjxmb", output: 0 },
 ];
-const examples2: TestData[] = [{ input: "", output: 0 }];
+
+const examples2: TestData[] = [
+	{ input: "qjhvhtzxzqqjkmpb", output: 1 },
+	{ input: "xxyxx", output: 1 },
+	{ input: "uurcxstgmygtbstg", output: 0 },
+	{ input: "ieodomkazucvgmuy", output: 0 },
+];
 
 const testMap1: TestMap = createTestMap(examples1);
 const testMap2: TestMap = createTestMap(examples2);
