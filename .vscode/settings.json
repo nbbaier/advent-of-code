@@ -1,0 +1,7 @@
+{
+   "workbench.editor.customLabels.patterns": {
+      "**/aoc/**/index.ts": "${dirname(1)}-${dirname} index",
+      "**/src/**/*.ts": "${dirname} ${filename}",
+      "**/aoc/**/day*.test.ts": "${dirname(1)}-${dirname} tests"
+   }
+}

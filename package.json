@@ -1,0 +1,23 @@
+{
+	"name": "advent-of-code",
+	"module": "src/index.ts",
+	"type": "module",
+	"scripts": {
+		"try": "bun . try ",
+		"scaffold": "bun . scaffold",
+		"attempt": "bun . attempt",
+		"check": "vitest run",
+		"watch": "vitest watch"
+	},
+	"dependencies": {
+		"zod": "^3.24.1"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "1.9.4",
+		"@types/bun": "latest",
+		"vitest": "^2.1.8"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	}
+}
