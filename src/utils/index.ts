@@ -13,19 +13,14 @@ export async function downloadInput(year: string, day: string) {
 	try {
 		const downloadPath = path.resolve(getDayPath(year, day), "input.txt");
 		console.log(`Downloading input for ${year} day ${day}...`);
-		const res = await fetch(
-			`https://adventofcode.com/${year}/day/${Number(day)}/input`,
-			{
-				headers: {
-					Cookie: Bun.env.AOC_TOKEN,
-				},
+		const res = await fetch(`https://adventofcode.com/${year}/day/${Number(day)}/input`, {
+			headers: {
+				Cookie: Bun.env.AOC_TOKEN,
 			},
-		);
+		});
 
 		if (!res.ok) {
-			throw new Error(
-				`Fetching data ${year}-${day} failed: ${res.status} ${res.statusText}`,
-			);
+			throw new Error(`Fetching data ${year}-${day} failed: ${res.status} ${res.statusText}`);
 		}
 		const text = await res.text();
 		await Bun.write(downloadPath, text);
@@ -38,10 +33,7 @@ export async function downloadInput(year: string, day: string) {
 	}
 }
 
-type Replacer = (
-	input: string,
-	rule: { in: string | RegExp; out: string },
-) => string;
+type Replacer = (input: string, rule: { in: string | RegExp; out: string }) => string;
 
 const defaultReplacer: Replacer = (
 	input: string,
@@ -61,11 +53,8 @@ export async function createFromTemplate(
 		fn?: Replacer;
 	}[],
 ) {
-	const templateText = loadFile(
-		path.resolve("./aoc/templates", `${template}.template.ts`),
-	);
+	const templateText = loadFile(path.resolve("./aoc/templates", `${template}.template.ts`));
 	if (!variables) {
-		console.log("no variables");
 		return await Bun.write(targetPath, templateText);
 	}
 
