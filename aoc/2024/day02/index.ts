@@ -1,5 +1,7 @@
-function parseReports(data: string) {
-	return data
+import { dropOne } from "@/utils";
+
+function parse(input: string) {
+	return input
 		.trim()
 		.split("\n")
 		.map((r) => r.split(" ").map((i) => Number.parseInt(i)));
@@ -29,12 +31,8 @@ function checkReport(report: number[]): boolean {
 	return new Set(directions).size === 1;
 }
 
-function dropOne<T>(arr: T[]) {
-	return arr.map((_, index) => arr.filter((_, filterIndex) => filterIndex !== index));
-}
-
 function part1(input: string): number | string {
-	const reports = parseReports(input);
+	const reports = parse(input);
 
 	let count = 0;
 
@@ -47,7 +45,7 @@ function part1(input: string): number | string {
 }
 
 function part2(input: string): number | string {
-	const reports = parseReports(input);
+	const reports = parse(input);
 
 	let count = 0;
 

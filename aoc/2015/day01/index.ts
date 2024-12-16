@@ -1,4 +1,4 @@
-const symMap = new Map([
+const symbolMap = new Map([
 	["(", 1],
 	[")", -1],
 ]);
@@ -6,12 +6,12 @@ const symMap = new Map([
 function part1(input: string): number | string {
 	return input
 		.split("")
-		.map((sym) => symMap.get(sym) ?? 0)
+		.map((sym) => symbolMap.get(sym) ?? 0)
 		.reduce((a, c) => a + c, 0);
 }
 
 function part2(input: string): number | string {
-	const instructions = input.split("").map((sym) => symMap.get(sym) ?? 0);
+	const instructions = input.split("").map((sym) => symbolMap.get(sym) ?? 0);
 
 	let floor = 0;
 	let answer = 0;

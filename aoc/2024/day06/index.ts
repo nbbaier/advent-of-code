@@ -1,4 +1,5 @@
-import type { Point, DirLabel, DirectionSet } from "@/types";
+import { rightTurnMap } from "@/constants";
+import type { Cardinal, DirectionSet, Point } from "@/types";
 
 /**
  * A set of directions for movement in a 2D grid, excluding diagonal directions.
@@ -76,14 +77,14 @@ function createLab({ grid }: { grid: string[][] }): Lab {
 		const row = grid[y];
 		for (let x = 0; x < row.length; x++) {
 			const key = `${x},${y}`;
-			board.cells.set(key, {
+			lab.cells.set(key, {
 				coord: { x, y },
 				obstacle: row[x] === "#",
 				raw: row[x],
 			});
 		}
 	}
-	return board;
+	return lab;
 }
 
 /**
@@ -122,46 +123,45 @@ function initializeGuard(lab: Lab): GuardState {
  */
 function takeTurn(
 	guard: GuardState,
-	board: Board,
+	lab: Lab,
 ): {
 	guard: GuardState;
-	board: Board;
+	lab: Lab;
 	on: boolean;
 } {
 	const startPoint = guard.position;
 	const startKey = `${startPoint.x},${startPoint.y}`;
-	const startCell = board.cells.get(startKey) as Cell;
+	const startCell = lab.cells.get(startKey) as Cell;
 	const direction = directions[guard.facing as keyof typeof directions];
 
 	if (!direction) {
 		throw new Error(`Invalid facing direction: ${guard.facing}`);
 	}
 
-	// Calculate next position based on current direction
 	const newPoint = {
 		x: startPoint.x + direction.dx,
 		y: startPoint.y + direction.dy,
 	};
 	const newKey = `${newPoint.x},${newPoint.y}`;
-	const nextCell = board.cells.get(newKey);
+	const nextCell = lab.cells.get(newKey);
 
 	// Handle three possible scenarios:
-	// 1. Guard would move off the board
+	// 1. Guard would move off the lab
 	if (typeof nextCell === "undefined") {
 		guard.visited.push(startCell.coord);
-		return { guard, board, on: false };
+		return { guard, lab, on: false };
 	}
 
 	// 2. Next cell is empty - move forward
 	if (!nextCell.obstacle) {
 		guard.visited.push(startCell.coord);
 		guard.position = newPoint;
-		return { guard, board, on: true };
+		return { guard, lab, on: true };
 	}
 
 	// 3. Hit an obstacle - rotate 90 degrees clockwise
-	guard.facing = turnMap.get(guard.facing) as Cardinal;
-	return { guard, board, on: true };
+	guard.facing = rightTurnMap.get(guard.facing) as Cardinal;
+	return { guard, lab, on: true };
 }
 
 function part1(input: string): number | string {
@@ -170,13 +170,13 @@ function part1(input: string): number | string {
 		.split("\n")
 		.map((line) => line.split(""));
 
-	let boardState = createBoard(grid);
-	let guardState = initializeGuard(boardState);
+	let labState = createLab({ grid });
+	let guardState = initializeGuard(labState);
 	let onState = true;
 
 	while (onState) {
-		const turnOutcome = takeTurn(guardState, boardState);
-		boardState = turnOutcome.board;
+		const turnOutcome = takeTurn(guardState, labState);
+		labState = turnOutcome.lab;
 		guardState = turnOutcome.guard;
 		onState = turnOutcome.on;
 	}
