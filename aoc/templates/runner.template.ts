@@ -1,3 +1,7 @@
+import { getRunMode } from "@/utils";
+
+const runMode = getRunMode();
+
 function part1(input: string): number | string {
 	return 0;
 }

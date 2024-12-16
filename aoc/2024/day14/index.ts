@@ -2,11 +2,14 @@ import type { Board, Point } from "@/types";
 import { variance } from "mathjs";
 import { Robot } from "./robot";
 import { sortQudrants } from "./sortQudrants";
+import { getRunMode } from "@/utils";
 
-// TODO: since the sample/input board dimensions are some different, might be good to add some way to have the actual runner detect what we're running under
+const runMode = getRunMode();
 
 function part1(input: string) {
-	const board: Board = { rows: 103, cols: 101 };
+	const board: Board = ["try", "test"].includes(runMode)
+		? { rows: 7, cols: 11 }
+		: { rows: 103, cols: 101 };
 	const robots: Robot[] = input
 		.trim()
 		.split("\n")
@@ -38,7 +41,7 @@ function part1(input: string) {
 function part2(input: string) {
 	// return 0;
 	let currentSeconds = 0;
-	const board: Board = { rows: 103, cols: 101 };
+	const board: Board = ["try"].includes(runMode) ? { rows: 7, cols: 11 } : { rows: 103, cols: 101 };
 	const robots: Robot[] = input
 		.trim()
 		.split("\n")

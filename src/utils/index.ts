@@ -16,7 +16,7 @@ export async function downloadInput(year: string, day: string) {
 		console.log(`Downloading input for ${year} day ${day}...`);
 		const res = await fetch(`https://adventofcode.com/${year}/day/${Number(day)}/input`, {
 			headers: {
-				Cookie: Bun.env.AOC_TOKEN,
+				Cookie: typeof Bun !== "undefined" ? Bun.env.AOC_TOKEN : process.env.AOC_TOKEN,
 			},
 		});
 
@@ -24,7 +24,11 @@ export async function downloadInput(year: string, day: string) {
 			throw new Error(`Fetching data ${year}-${day} failed: ${res.status} ${res.statusText}`);
 		}
 		const text = await res.text();
-		await Bun.write(downloadPath, text);
+		if (typeof Bun !== "undefined") {
+			await Bun.write(downloadPath, text);
+		} else {
+			fs.writeFileSync(downloadPath, text);
+		}
 	} catch (error) {
 		if (error instanceof Error) {
 			console.error(error.message);
@@ -80,3 +84,18 @@ export function getMiddleIndex<T>(arr: T[]): number | null {
 }
 
 export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Retrieves the current run mode of the application.
+ *
+ * This function checks if the `Bun` environment is defined. If it is, it returns the `MODE` from `Bun.env`.
+ * Otherwise, it returns the `MODE` from `process.env`.
+ *
+ * @returns {string} The current run mode of the application. When run under vitest, will always return "test"
+ */
+export function getRunMode() {
+	if (typeof Bun !== "undefined" && Bun.env && Bun.env.MODE) {
+		return Bun.env.MODE;
+	}
+	return process.env.MODE;
+}

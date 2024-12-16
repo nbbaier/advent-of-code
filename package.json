@@ -3,9 +3,9 @@
 	"module": "src/index.ts",
 	"type": "module",
 	"scripts": {
-		"try": "bun . try ",
-		"scaffold": "bun . scaffold",
-		"attempt": "bun . attempt",
+		"try": "MODE=try bun src/index.ts",
+		"scaffold": "MODE=scaffold bun src/index.ts",
+		"attempt": "MODE=attempt bun src/index.ts",
 		"check": "vitest run",
 		"watch": "vitest watch"
 	},

@@ -3,14 +3,14 @@ import fs from "node:fs";
 import { createFromTemplate, downloadInput, getDayPath, loadFile } from "./utils";
 import { z } from "zod";
 
-const modeSchema = z.enum(["scaffold", "attempt", "try"]);
+const modeSchema = z.enum(["scaffold", "attempt", "try", "test"]);
 type Mode = z.infer<typeof modeSchema>;
 
-const fallbackDate = new Date();
+const mode: Mode = modeSchema.parse(getRunMode());
 
-const mode = modeSchema.parse(Bun.argv[2]);
-const day = (Bun.argv[3] || fallbackDate.getDate().toString()).padStart(2, "0");
-const year = Bun.argv[4] || fallbackDate.getFullYear().toString();
+const fallbackDate = new Date();
+const day = (Bun.argv[2] || fallbackDate.getDate().toString()).padStart(2, "0");
+const year = Bun.argv[3] || fallbackDate.getFullYear().toString();
 
 const dayPath = getDayPath(year, day);
 
@@ -19,13 +19,15 @@ const testPath = path.resolve(dayPath, `day${day}.test.ts`);
 const samplePath = path.resolve(dayPath, "sample.txt");
 const inputPath = path.resolve(dayPath, "input.txt");
 
-// console.log("mode     =", mode);
-// console.log("year     =", year);
-// console.log("day      =", day);
-// console.log("runner   =", runnerPath);
-// console.log("sample    =", samplePath);
-// console.log("input    =", inputPath);
-// console.log("tests    =", testPath);
+if (Bun.env.DEBUG) {
+	console.log("mode    =", mode);
+	console.log("year    =", year);
+	console.log("day     =", day);
+	console.log("runner  =", runnerPath);
+	console.log("sample  =", samplePath);
+	console.log("input   =", inputPath);
+	console.log("tests   =", testPath);
+}
 
 if (mode === "scaffold") {
 	if (fs.existsSync(runnerPath)) {
