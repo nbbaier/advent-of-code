@@ -11,6 +11,13 @@ export type Point = {
 	y: number;
 };
 
+export type Velocity = { dx: number; dy: number };
+
+export interface Board {
+	rows: number;
+	cols: number;
+}
+
 export type Direction = {
 	dx: number;
 	dy: number;
