@@ -3,34 +3,30 @@ import type { TestData, TestMap } from "@/types";
 import { getDayPath, loadFile } from "@/utils";
 import { createTestMap, createTestSet } from "@/utils/test";
 import { describe } from "vitest";
-import solution from "./runner.template";
+import solution from ".";
 
-const year = "<%year%>";
-const day = "<%day%>";
+const year = "2024";
+const day = "07";
 const dayPath = getDayPath(year, day);
 
 const examples1: TestData[] = [
 	{
-		name: "tests for p1",
+		name: "=> 3749",
 		input: loadFile(path.resolve(dayPath, "sample.txt")),
-		output: 0,
+		output: 3749,
 	},
 ];
 const examples2: TestData[] = [
-	{
-		name: "tests for p2",
-		input: loadFile(path.resolve(dayPath, "sample.txt")),
-		output: 0,
-	},
+	{ name: "=> 11387", input: loadFile(path.resolve(dayPath, "sample.txt")), output: 11387 },
 ];
 
 const testMap1: TestMap = createTestMap(examples1);
 const testMap2: TestMap = createTestMap(examples2);
 
-describe("day <%day%> part 1", () => {
+describe("day 07 part 1", () => {
 	createTestSet(testMap1, solution, "p1");
 });
 
-describe("day <%day%> part 2", () => {
+describe("day 07 part 2", () => {
 	createTestSet(testMap2, solution, "p2");
 });
