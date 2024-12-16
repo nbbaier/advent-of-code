@@ -29,11 +29,7 @@ function part1(input: string) {
 	const quadrants = sortQudrants(board, finalPositions);
 
 	return Array.from(quadrants.keys())
-		.map((key) => {
-			const value = quadrants?.get(key)?.length ?? 0;
-			console.log(value);
-			return value;
-		})
+		.map((key) => quadrants?.get(key)?.length ?? 0)
 		.reduce((a, c) => a * c, 1);
 }
 
@@ -41,7 +37,9 @@ function part1(input: string) {
 function part2(input: string) {
 	// return 0;
 	let currentSeconds = 0;
-	const board: Board = ["try"].includes(runMode) ? { rows: 7, cols: 11 } : { rows: 103, cols: 101 };
+	const board: Board = ["try"].includes(runMode)
+		? { rows: 7, cols: 11 }
+		: { rows: 103, cols: 101 };
 	const robots: Robot[] = input
 		.trim()
 		.split("\n")
