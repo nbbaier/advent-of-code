@@ -4,5 +4,9 @@
       "**/aoc/**/*.txt": "${dirname(1)}-${dirname} ${filename}",
       "**/src/**/*.ts": "${dirname} ${filename}",
       "**/aoc/**/day*.test.ts": "${dirname(1)}-${dirname} tests"
-   }
+   },
+   "conventionalCommits.scopes": [
+      "src/index.ts",
+      "2024/day14/index.ts"
+   ]
 }
