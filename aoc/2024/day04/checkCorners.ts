@@ -33,6 +33,5 @@ export function checkCorners(
 	const lrDiag = `${grid[start.y + corners.ur.dy][start.x + corners.ur.dx]}${grid[start.y + corners.dl.dy][start.x + corners.dl.dx]}`;
 	const rlDiag = `${grid[start.y + corners.ul.dy][start.x + corners.ul.dx]}${grid[start.y + corners.dr.dy][start.x + corners.dr.dx]}`;
 
-	// return the check of the diagonals
 	return ["MS", "SM"].includes(lrDiag) && ["MS", "SM"].includes(rlDiag);
 }

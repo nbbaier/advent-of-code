@@ -24,15 +24,12 @@ export function checkXMAS(
 	const endY = start.y + dir.dy;
 
 	if (checkOutOfBounds(endX, endY, rows, cols)) {
-		// console.log(`[${endX}, ${endY}]\tout`);
 		return false;
 	}
-	// console.log(`[${endX}, ${endY}]\tin`);
 	for (let i = 0; i < target.length; i++) {
 		const currentX = start.x + dir.dx * i;
 		const currentY = start.y + dir.dy * i;
 		if (checkOutOfBounds(currentX, currentY, rows, cols)) {
-			// console.log(`[${currentX}, ${currentY}]\tout`);
 			return false;
 		}
 		if (grid[currentY][currentX] !== target[i]) {
