@@ -13,7 +13,7 @@ const examples1: TestData[] = [
 	{
 		name: "tests for p1",
 		input: loadFile(path.resolve(dayPath, "sample.txt")),
-		output: 21,
+		output: 12,
 	},
 ];
 
