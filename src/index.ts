@@ -1,6 +1,6 @@
 import path from "node:path";
 import fs from "node:fs";
-import { createFromTemplate, downloadInput, getDayPath, loadFile } from "./utils";
+import { createFromTemplate, downloadInput, getDayPath, loadFile, getRunMode } from "./utils";
 import { z } from "zod";
 
 const modeSchema = z.enum(["scaffold", "attempt", "try", "test"]);
