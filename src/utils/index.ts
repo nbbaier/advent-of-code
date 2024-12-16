@@ -34,12 +34,9 @@ export async function downloadInput(year: string, day: string) {
 	}
 }
 
-const defaultReplacer: ReplacerFn = (
-	input: string,
-	rule: { in: string | RegExp; out: string },
-) => {
+function defaultReplacer(input: string, rule: { in: string | RegExp; out: string }) {
 	return input.replaceAll(rule.in, rule.out);
-};
+}
 
 export async function createFromTemplate(
 	template: string,
@@ -81,3 +78,5 @@ export function getMiddleIndex<T>(arr: T[]): number | null {
 	}
 	return Math.floor(arr.length / 2);
 }
+
+export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
