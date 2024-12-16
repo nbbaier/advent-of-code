@@ -1,5 +1,14 @@
 import type { Board, Point } from "@/types";
 
+/**
+ * Sorts the given points into quadrants based on their positions on the board.
+ * The board is divided into four quadrants: top-left, top-right, bottom-left, and bottom-right.
+ * Points that fall exactly on the middle row or column are not included in any quadrant.
+ *
+ * @param board - The board object containing the number of rows and columns.
+ * @param points - An array of points to be sorted, where each point has x and y coordinates.
+ * @returns A Map where the keys are quadrant names (e.g., "top-left") and the values are arrays of points in that quadrant.
+ */
 export function sortQudrants(board: Board, points: Point[]) {
 	const middleRow = Math.floor(board.rows / 2);
 	const middleCol = Math.floor(board.cols / 2);

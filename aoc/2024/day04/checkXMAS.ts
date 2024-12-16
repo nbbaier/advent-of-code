@@ -1,6 +1,16 @@
 import type { Point, Direction } from "@/types";
 import { checkOutOfBounds } from "@/utils/grids";
 
+/**
+ * Checks if the string "XMAS" can be found in the grid starting from a given point and moving in a specified direction.
+ *
+ * @param grid - A 2D array of strings representing the grid.
+ * @param start - The starting point in the grid.
+ * @param dir - The direction to move in the grid.
+ * @param rows - The number of rows in the grid.
+ * @param cols - The number of columns in the grid.
+ * @returns `true` if "XMAS" is found in the grid starting from the given point and moving in the specified direction, otherwise `false`.
+ */
 export function checkXMAS(
 	grid: string[][],
 	start: Point,

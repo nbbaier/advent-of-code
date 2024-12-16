@@ -1,3 +1,9 @@
+/**
+ * Parses a string of data into two lists of numbers.
+ *
+ * @param data - A string containing pairs of numbers separated by whitespace, with each pair on a new line.
+ * @returns An object containing two arrays: `left` and `right`. Each array contains the numbers from the respective positions in the pairs.
+ */
 function createLists(data: string): {
 	left: number[];
 	right: number[];

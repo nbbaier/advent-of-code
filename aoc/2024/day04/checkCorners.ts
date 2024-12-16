@@ -2,6 +2,15 @@ import type { Point } from "@/types";
 import { checkOutOfBounds } from "@/utils/grids";
 import { directions } from ".";
 
+/**
+ * Checks if the corners of a specified region in a grid meet certain conditions.
+ *
+ * @param grid - A 2D array of strings representing the grid.
+ * @param start - The starting point of the region to check.
+ * @param rows - The number of rows in the grid.
+ * @param cols - The number of columns in the grid.
+ * @returns A boolean indicating whether the corners of the region meet the conditions.
+ */
 export function checkCorners(
 	grid: string[][],
 	start: Point,

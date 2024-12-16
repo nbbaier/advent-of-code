@@ -2,14 +2,36 @@ import type { ReplacerFn } from "@/types";
 import fs from "node:fs";
 import path from "node:path";
 
+/**
+ * Reads the content of a file synchronously and returns it as a string.
+ *
+ * @param filePath - The path to the file to be read.
+ * @returns The content of the file as a string.
+ */
 export function loadFile(filePath: string) {
 	return fs.readFileSync(filePath).toString();
 }
 
+/**
+ * Generates the file path for a specific day's challenge in the Advent of Code event.
+ *
+ * @param year - The year of the Advent of Code event.
+ * @param day - The day of the challenge within the event.
+ * @returns The file path string for the specified day's challenge.
+ */
 export function getDayPath(year: string, day: string): string {
 	return `./aoc/${year}/day${day.padStart(2, "0")}`;
 }
 
+/**
+ * Downloads the input data for a specific day of Advent of Code and saves it to a file.
+ *
+ * @param year - The year of the Advent of Code event.
+ * @param day - The day of the Advent of Code puzzle.
+ * @returns A promise that resolves when the input data has been downloaded and saved.
+ *
+ * @throws Will throw an error if the fetch request fails or if there is an issue writing the file.
+ */
 export async function downloadInput(year: string, day: string) {
 	try {
 		const downloadPath = path.resolve(getDayPath(year, day), "input.txt");
@@ -38,10 +60,44 @@ export async function downloadInput(year: string, day: string) {
 	}
 }
 
-function defaultReplacer(input: string, rule: { in: string | RegExp; out: string }) {
+/**
+ * Generates an array of arrays, each missing one element from the original array.
+ *
+ * @template T - The type of elements in the array.
+ * @param {T[]} arr - The input array.
+ * @returns {T[][]} An array of arrays, each with one element removed from the original array.
+ */
+export function dropOne<T>(arr: T[]) {
+	return arr.map((_, index) => arr.filter((_, filterIndex) => filterIndex !== index));
+}
+
+/**
+ * Replaces all occurrences of a specified string or regular expression in the input string with a replacement string.
+ *
+ * @param input - The input string in which to perform the replacements.
+ * @param rule - An object containing the pattern to match (`in`) and the replacement string (`out`).
+ *   - `in`: The string or regular expression to be replaced.
+ *   - `out`: The string to replace the matched pattern with.
+ * @returns The modified string with all replacements made.
+ */
+function defaultReplacer(input: string, rule: { in: string | RegExp; out: string }): string {
 	return input.replaceAll(rule.in, rule.out);
 }
 
+/**
+ * Asynchronously creates a file from a template, replacing variables and applying custom replacers.
+ *
+ * @param {string} template - The name of the template file (without extension) located in the "./aoc/templates" directory.
+ * @param {string} targetPath - The path where the generated file should be written.
+ * @param {Object} [variables] - An optional object containing key-value pairs for variable replacements in the template.
+ * @param {Object[]} [replacers] - An optional array of replacer objects to apply custom replacements.
+ * @param {Object} replacers[].rule - The rule for the replacement, containing an `in` pattern (string or RegExp) and an `out` string.
+ * @param {string | RegExp} replacers[].rule.in - The pattern to search for in the template text.
+ * @param {string} replacers[].rule.out - The string to replace the pattern with.
+ * @param {Function} [replacers[].fn] - An optional custom replacer function. If not provided, a default replacer function is used.
+ *
+ * @returns {Promise<void>} A promise that resolves when the file has been written.
+ */
 export async function createFromTemplate(
 	template: string,
 	targetPath: string,
@@ -76,6 +132,13 @@ export async function createFromTemplate(
 	return await Bun.write(targetPath, output);
 }
 
+/**
+ * Returns the middle index of an array. If the array is empty, returns null.
+ *
+ * @template T - The type of elements in the array.
+ * @param {T[]} arr - The array to find the middle index of.
+ * @returns {number | null} The middle index of the array, or null if the array is empty.
+ */
 export function getMiddleIndex<T>(arr: T[]): number | null {
 	if (arr.length === 0) {
 		return null;
@@ -83,6 +146,12 @@ export function getMiddleIndex<T>(arr: T[]): number | null {
 	return Math.floor(arr.length / 2);
 }
 
+/**
+ * Delays the execution of code for a specified number of milliseconds.
+ *
+ * @param ms - The number of milliseconds to delay.
+ * @returns A promise that resolves after the specified delay.
+ */
 export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**

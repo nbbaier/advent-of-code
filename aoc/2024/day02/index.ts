@@ -5,6 +5,14 @@ function parseReports(data: string) {
 		.map((r) => r.split(" ").map((i) => Number.parseInt(i)));
 }
 
+/**
+ * Checks if the given report array follows a specific pattern.
+ * The pattern is defined as the difference between consecutive elements
+ * being either -1, -2, -3, 1, 2, or 3, and all differences must be in the same direction.
+ *
+ * @param report - An array of numbers representing the report.
+ * @returns `true` if the report follows the pattern, `false` otherwise.
+ */
 function checkReport(report: number[]): boolean {
 	const directions: string[] = [];
 
