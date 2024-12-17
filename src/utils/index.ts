@@ -43,7 +43,9 @@ export async function downloadInput(year: string, day: string) {
 		});
 
 		if (!res.ok) {
-			throw new Error(`Fetching data ${year}-${day} failed: ${res.status} ${res.statusText}`);
+			throw new Error(
+				`Fetching data ${year}-${day} failed: ${res.status} ${res.statusText}`,
+			);
 		}
 		const text = await res.text();
 		if (typeof Bun !== "undefined") {
@@ -67,7 +69,7 @@ export async function downloadInput(year: string, day: string) {
  * @param {T[]} arr - The input array.
  * @returns {T[][]} An array of arrays, each with one element removed from the original array.
  */
-export function dropOne<T>(arr: T[]) {
+export function dropOne<T>(arr: T[]): T[][] {
 	return arr.map((_, index) => arr.filter((_, filterIndex) => filterIndex !== index));
 }
 
@@ -80,7 +82,10 @@ export function dropOne<T>(arr: T[]) {
  *   - `out`: The string to replace the matched pattern with.
  * @returns The modified string with all replacements made.
  */
-function defaultReplacer(input: string, rule: { in: string | RegExp; out: string }): string {
+function defaultReplacer(
+	input: string,
+	rule: { in: string | RegExp; out: string },
+): string {
 	return input.replaceAll(rule.in, rule.out);
 }
 
@@ -108,10 +113,13 @@ export async function createFromTemplate(
 		rule: { in: string | RegExp; out: string };
 		fn?: ReplacerFn;
 	}[],
-) {
-	const templateText = loadFile(path.resolve("./aoc/templates", `${template}.template.ts`));
+): Promise<void> {
+	const templateText = loadFile(
+		path.resolve("./aoc/templates", `${template}.template.ts`),
+	);
 	if (!variables) {
-		return await Bun.write(targetPath, templateText);
+		await Bun.write(targetPath, templateText);
+		return;
 	}
 
 	let output = templateText;
@@ -129,7 +137,8 @@ export async function createFromTemplate(
 		}
 	}
 
-	return await Bun.write(targetPath, output);
+	await Bun.write(targetPath, output);
+	return;
 }
 
 /**
@@ -162,9 +171,27 @@ export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve
  *
  * @returns {string} The current run mode of the application. When run under vitest, will always return "test"
  */
-export function getRunMode() {
+export function getRunMode(): string {
 	if (typeof Bun !== "undefined" && Bun.env && Bun.env.MODE) {
 		return Bun.env.MODE;
 	}
 	return process.env.MODE;
+}
+
+export function includesObject<T extends object>(
+	arr: T[],
+	obj: T,
+	keys: (keyof T)[] = Object.keys(obj) as (keyof T)[],
+): boolean {
+	return arr.some((item) => keys.every((key) => item[key] === obj[key]));
+}
+
+export function popFromSet<T>(set: Set<T>): T | undefined {
+	if (set.size < 1) {
+		return undefined;
+	}
+	const items = Array.from(set);
+	const item = items[Math.floor(Math.random() * items.length)];
+	set.delete(item);
+	return item;
 }
