@@ -16,11 +16,12 @@ const examples1: TestData[] = [
 		output: "4,6,3,5,6,3,5,2,1,0",
 	},
 ];
+
 const examples2: TestData[] = [
 	{
 		name: "tests for p2",
-		input: loadFile(path.resolve(dayPath, "sample.txt")),
-		output: 0,
+		input: loadFile(path.resolve(dayPath, "sample2.txt")),
+		output: 117440,
 	},
 ];
 

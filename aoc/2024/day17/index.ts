@@ -1,220 +1,142 @@
-import { getRunMode } from "@/utils";
-import { boolean, re } from "mathjs";
-import { match, P } from "ts-pattern";
-
-const runMode = getRunMode();
-
-type Program = number[];
-type Registers = Map<"A" | "B" | "C", number>;
+export type Registers = Map<"A" | "B" | "C", number>;
 
 type Instruction = (
-	r: Registers,
-	o: number,
-	p: number,
-) => { out?: number; nextPointer: number };
+	registers: Registers,
+	operand: number,
+) => { registers: Registers; nextPointer?: number; output?: number };
 
-function combos(registers: Registers, operand: number): number | string {
-	const result = match(operand)
-		.with(
-			P.when((op) => op <= 3),
-			() => operand,
-		)
-		.with(4, () => getRegister(registers, "A"))
-		.with(5, () => getRegister(registers, "B"))
-		.with(6, () => getRegister(registers, "C"))
-		.otherwise(() => "error");
+export const combos: { [key: number]: number | "A" | "B" | "C" } = {
+	0: 0,
+	1: 1,
+	2: 2,
+	3: 3,
+	4: "A",
+	5: "B",
+	6: "C",
+};
 
-	return result;
+function getComboValue(registers: Registers, operand: number): number {
+	const combo = combos[operand];
+	return typeof combo === "string" ? registers.get(combo as "A" | "B" | "C") || 0 : combo;
 }
 
-const binary = (n: number, l: number) => Number(`0b${(n >>> 0).toString(2).padStart(l, "0")}`);
-
-function getRegister(registers: Registers, r: "A" | "B" | "C"): number {
-	const value = registers.get(r);
-	return value !== undefined ? value : 0;
-}
-
-const adv: Instruction = (r, o, p) => {
-	const A = getRegister(r, "A");
-	const power = combos(r, o);
-	if (typeof power === "string") {
-		throw new Error("Combo operand 7");
-	}
-	r.set("A", Math.trunc(A / 2 ** power));
-	return { nextPointer: p + 2 };
-};
-
-const bxl: Instruction = (r, o, p) => {
-	const B = getRegister(r, "B");
-	r.set("B", B ^ o);
-	return { nextPointer: p + 2 };
-};
-
-const bst: Instruction = (r, o, p) => {
-	const value = combos(r, o);
-	if (typeof value === "string") {
-		throw new Error("Combo operand 7");
-	}
-	r.set("B", value % 8);
-	return { nextPointer: p + 2 };
-};
-
-const jnz: Instruction = (r, o, p) => {
-	const A = getRegister(r, "A");
-	if (A === 0) {
-		return { nextPointer: p + 2 };
-	}
-	return { nextPointer: o };
-};
-
-const bxc: Instruction = (r, _, p) => {
-	const B = getRegister(r, "B");
-	const C = getRegister(r, "C");
-	r.set("C", B ^ C);
-	return { nextPointer: p + 2 };
-};
-
-const out: Instruction = (r, o, p) => {
-	const value = combos(r, o);
-	if (typeof value === "string") {
-		throw new Error("Combo operand 7");
-	}
-
-	return { out: value % 8, nextPointer: p + 2 };
-};
-
-const bdv: Instruction = (r, o, p) => {
-	const A = getRegister(r, "A");
-	const power = combos(r, o);
-	if (typeof power === "string") {
-		throw new Error("Combo operand 7");
-	}
-	r.set("B", Math.trunc(A / 2 ** power));
-	return { nextPointer: p + 2 };
-};
-
-const cdv: Instruction = (r, o, p) => {
-	const A = getRegister(r, "A");
-	const power = combos(r, o);
-	if (typeof power === "string") {
-		throw new Error("Combo operand 7");
-	}
-	r.set("C", Math.trunc(A / 2 ** power));
-	return { nextPointer: p + 2 };
-};
-
-function parse(input: string): [Registers, Program] {
+function parse(input: string): [Registers, number[]] {
 	const [A, B, C, _, raw] = input.trim().split("\n");
-	const program: Program = raw.split(":")[1].trim().split(",").map(Number);
-	const registers: Registers = new Map();
-	registers.set("A", Number(A.split(":")[1].trim()));
-	registers.set("B", Number(B.split(":")[1].trim()));
-	registers.set("C", Number(C.split(":")[1].trim()));
-
+	const registers: Registers = new Map([
+		["A", Number(A.split(":")[1].trim())],
+		["B", Number(B.split(":")[1].trim())],
+		["C", Number(C.split(":")[1].trim())],
+	]);
+	const program = raw.split(":")[1].trim().split(",").map(Number);
 	return [registers, program];
 }
 
-const instructions: Map<number, Instruction> = new Map([
-	[0, adv],
-	[1, bxl],
-	[2, bst],
-	[3, jnz],
-	[4, bxc],
-	[5, out],
-	[6, bdv],
-	[7, cdv],
-]);
+const createDivInstruction =
+	(target: "A" | "B" | "C"): Instruction =>
+	(registers: Registers, operand: number) => {
+		const numerator = registers.get("A") || 0;
+		const denominator = 2 ** getComboValue(registers, operand);
+		registers.set(target, Math.floor(numerator / denominator));
+		return { registers };
+	};
 
-function part1(input: string): number | string {
-	const [registers, program] = parse(input);
+export const adv = createDivInstruction("A");
+export const bdv = createDivInstruction("B");
+export const cdv = createDivInstruction("C");
 
-	return readProgram(program, registers, instructions).join("");
-}
+export const bxl: Instruction = (registers: Registers, operand: number) => {
+	const B = registers.get("B") || 0;
+	registers.set("B", B ^ operand);
+	return { registers };
+};
 
-function part2(input: string): number | string {
-	return 0;
-}
+export const bst: Instruction = (registers: Registers, operand: number) => {
+	const combo = combos[operand];
+	let value: number;
+	if (typeof combo === "string") {
+		value = registers.get(combo as "A" | "B" | "C") || 0;
+	} else {
+		value = combo;
+	}
+	registers.set("B", value % 8);
+	return { registers };
+};
 
-export default { p1: part1, p2: part2 };
+export const jnz: Instruction = (registers: Registers, operand: number) => {
+	if (registers.get("A") !== 0) {
+		return { registers, nextPointer: operand };
+	}
+	return { registers };
+};
 
-function readProgram(
-	program: Program,
+export const bxc: Instruction = (registers: Registers, operand: number) => {
+	const B = registers.get("B") || 0;
+	const C = registers.get("C") || 0;
+
+	registers.set("B", B ^ C);
+	return { registers };
+};
+
+export const out: Instruction = (registers: Registers, operand: number) => {
+	const combo = combos[operand];
+	let value: number;
+	if (typeof combo === "string") {
+		value = registers.get(combo as "A" | "B" | "C") || 0;
+	} else {
+		value = combo;
+	}
+
+	return { registers, output: value % 8 };
+};
+
+export const opcodes: { [key: number]: Instruction } = {
+	0: adv,
+	1: bxl,
+	2: bst,
+	3: jnz,
+	4: bxc,
+	5: out,
+	6: bdv,
+	7: cdv,
+};
+
+export function runProgram(
+	program: number[],
 	registers: Registers,
-	instructions: Map<number, Instruction>,
-) {
+	returnReg = false,
+): number[] {
+	let currentRegisters = registers;
 	let pointer = 0;
-	let halt = false;
-	const output: number[] = [];
+	const outputs: number[] = [];
 
-	console.log("\nStarting program execution:");
-	console.log("Initial registers:", {
-		A: registers.get("A"),
-		B: registers.get("B"),
-		C: registers.get("C"),
-	});
-
-	while (!halt) {
+	while (pointer < program.length) {
 		const opcode = program[pointer];
 		const operand = program[pointer + 1];
-		const instructionName =
-			[...instructions.entries()].find(([k]) => k === opcode)?.[1].name || "unknown";
+		const fn = opcodes[opcode as keyof typeof opcodes];
+		const { registers: updatedRegisters, nextPointer, output } = fn(currentRegisters, operand);
+		currentRegisters = updatedRegisters;
 
-		console.log(`\nStep ${pointer / 2}:`);
-		console.log(`Executing ${instructionName}(${operand})`);
-		console.log("Before:", {
-			A: registers.get("A"),
-			B: registers.get("B"),
-			C: registers.get("C"),
-		});
-
-		const fn = instructions.get(opcode) as Instruction;
-		const { out, nextPointer } = fn(registers, operand, pointer);
-
-		if (out !== undefined) {
-			console.log(`Output: ${out}`);
-			output.push(out);
+		if (output !== undefined) {
+			outputs.push(output);
 		}
-
-		console.log("After:", {
-			A: registers.get("A"),
-			B: registers.get("B"),
-			C: registers.get("C"),
-		});
-		console.log("Next pointer:", nextPointer);
-
-		pointer = nextPointer;
-
-		if (pointer >= program.length) {
-			halt = true;
+		if (nextPointer !== undefined) {
+			pointer = nextPointer;
+		} else {
+			pointer += 2;
 		}
 	}
 
-	return output;
+	return outputs;
 }
 
-// Add a test function
-function test() {
-	// First run the example to verify
-	console.log("\nRunning example test:");
-	const testRegisters: Registers = new Map();
-	testRegisters.set("A", 2024);
-	testRegisters.set("B", 0);
-	testRegisters.set("C", 0);
-	const testProgram = [0, 1, 5, 4, 3, 0];
-	console.log("Test output:", readProgram(testProgram, testRegisters, instructions).join(","));
-
-	// Then run the actual input
-	console.log("\nRunning actual input:");
-	const actualRegisters: Registers = new Map();
-	actualRegisters.set("A", 59590048);
-	actualRegisters.set("B", 0);
-	actualRegisters.set("C", 0);
-	const actualProgram = [2, 4, 1, 5, 7, 5, 0, 3, 1, 6, 4, 3, 5, 5, 3, 0];
-	console.log(
-		"Actual output:",
-		readProgram(actualProgram, actualRegisters, instructions).join(","),
-	);
+function part1(input: string): number | string {
+	const [registers, program] = parse(input);
+	return runProgram(program, registers).join(",");
 }
 
-// Call it before running the real input
-test();
+function part2(input: string): number | string {
+	const [registers, program] = parse(input);
+	return runProgram(program, registers).join(",");
+}
+
+export default { p1: part1, p2: part2 };
