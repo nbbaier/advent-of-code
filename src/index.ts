@@ -1,9 +1,10 @@
 import path from "node:path";
 import fs from "node:fs";
-import { createFromTemplate, downloadInput, getDayPath, loadFile, getRunMode } from "./utils";
+import { createFromTemplate, getDayPath, loadFile, getRunMode } from "./utils";
+import { downloadInput, downloadPuzzle } from "./utils/download";
 import { z } from "zod";
 
-const modeSchema = z.enum(["scaffold", "attempt", "try", "test"]);
+const modeSchema = z.enum(["scaffold", "attempt", "try", "test", "read"]);
 type Mode = z.infer<typeof modeSchema>;
 
 const mode: Mode = modeSchema.parse(getRunMode());
@@ -15,6 +16,7 @@ const year = Bun.argv[3] || fallbackDate.getFullYear().toString();
 const dayPath = getDayPath(year, day);
 
 const runnerPath = path.resolve(dayPath, "index.ts");
+const puzzlePath = path.resolve(dayPath, "puzzle.md");
 const testPath = path.resolve(dayPath, `day${day}.test.ts`);
 const samplePath = path.resolve(dayPath, "sample.txt");
 const inputPath = path.resolve(dayPath, "input.txt");
@@ -41,7 +43,18 @@ if (mode === "scaffold") {
 		{ rule: { in: "./runner.template", out: "." } },
 	]);
 	await downloadInput(year, day);
+	await downloadPuzzle(year, day);
 
+	process.exit();
+}
+
+if (mode === "read") {
+	if (fs.existsSync(puzzlePath)) {
+		console.log(`Puzzle for ${year} day ${day} already exists`);
+		process.exit();
+	}
+	console.log(`Getting puzzle text for: ${year} day ${day}`);
+	await downloadPuzzle(year, day);
 	process.exit();
 }
 
