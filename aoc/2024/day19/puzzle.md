@@ -1,4 +1,4 @@
-## Day 19: Linen Layout
+# Day 19: Linen Layout
 
 Today, The Historians take you up to the hot springs on Gear Island! Very suspiciously, absolutely nothing goes wrong as they begin their careful search of the vast field of helixes.
 
@@ -12,16 +12,18 @@ The Official Onsen Branding Expert has produced a list of _designs_ - each a lon
 
 To start, collect together all of the available towel patterns and the list of desired designs (your puzzle input). For example:
 
-    r, wr, b, g, bwu, rb, gb, br
+```
+r, wr, b, g, bwu, rb, gb, br
 
-    brwrr
-    bggr
-    gbbr
-    rrbgbr
-    ubwu
-    bwurrg
-    brgr
-    bbrgwb
+brwrr
+bggr
+gbbr
+rrbgbr
+ubwu
+bwurrg
+brgr
+bbrgwb
+```
 
 The first line indicates the available towel patterns; in this example, the onsen has unlimited towels with a single red stripe (`r`), unlimited towels with a white stripe and then a red stripe (`wr`), and so on.
 
@@ -42,6 +44,42 @@ In this example, `_6_` of the eight designs are possible with the available towe
 
 To get into the onsen as soon as possible, consult your list of towel patterns and desired designs carefully. _How many designs are possible?_
 
-To begin, get your puzzle input.
+Your puzzle answer was `358`.
 
-Answer:
+## Part Two
+
+The staff don't really like some of the towel arrangements you came up with. To avoid an endless cycle of towel rearrangement, maybe you should just give them every possible option.
+
+Here are all of the different ways the above example's designs can be made:
+
+`brwrr` can be made in two different ways: `b`, `r`, `wr`, `r` _or_ `br`, `wr`, `r`.
+
+`bggr` can only be made with `b`, `g`, `g`, and `r`.
+
+`gbbr` can be made 4 different ways:
+
+- `g`, `b`, `b`, `r`
+- `g`, `b`, `br`
+- `gb`, `b`, `r`
+- `gb`, `br`
+
+`rrbgbr` can be made 6 different ways:
+
+- `r`, `r`, `b`, `g`, `b`, `r`
+- `r`, `r`, `b`, `g`, `br`
+- `r`, `r`, `b`, `gb`, `r`
+- `r`, `rb`, `g`, `b`, `r`
+- `r`, `rb`, `g`, `br`
+- `r`, `rb`, `gb`, `r`
+
+`bwurrg` can only be made with `bwu`, `r`, `r`, and `g`.
+
+`brgr` can be made in two different ways: `b`, `r`, `g`, `r` _or_ `br`, `g`, `r`.
+
+`ubwu` and `bbrgwb` are still impossible.
+
+Adding up all of the ways the towels in this example could be arranged into the desired designs yields `_16_` (`2 + 1 + 4 + 6 + 1 + 2`).
+
+They'll let you into the onsen as soon as you have the list. _What do you get if you add up the number of different ways you could make each design?_
+
+Your puzzle answer was `600639829400603`.

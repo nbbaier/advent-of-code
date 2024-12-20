@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import Turndown from "turndown";
 import { getDayPath } from ".";
+import { Readability } from "@mozilla/readability";
+import { JSDOM } from "jsdom";
 
 /**
  * Downloads the input data for a specific day of Advent of Code and saves it to a file.
@@ -19,7 +21,7 @@ export async function downloadInput(year: string, day: string) {
 		console.log(`Downloading input for ${year} day ${day}...`);
 		const res = await fetch(`https://adventofcode.com/${year}/day/${Number(day)}/input`, {
 			headers: {
-				Cookie: typeof Bun !== "undefined" ? Bun.env.AOC_TOKEN : process.env.AOC_TOKEN,
+				Cookie: `session=${typeof Bun !== "undefined" ? Bun.env.AOC_TOKEN : process.env.AOC_TOKEN}`,
 			},
 		});
 
@@ -41,21 +43,21 @@ export async function downloadInput(year: string, day: string) {
 		}
 	}
 }
+
 /**
- * Downloads the Advent of Code puzzle for the specified year and day, converts it to Markdown,
- * and saves it to a file named `puzzle.md` in the appropriate directory.
+ * Downloads the puzzle for a given year and day from the Advent of Code website and saves it as a markdown file.
  *
  * @param year - The year of the puzzle to download.
  * @param day - The day of the puzzle to download.
- * @throws Will throw an error if the fetch request fails or if there is an issue writing the file.
+ * @throws Will throw an error if the fetch request fails or if the puzzle HTML cannot be parsed.
  */
-
 export async function downloadPuzzle(year: string, day: string) {
 	try {
 		const downloadPath = path.resolve(getDayPath(year, day), "puzzle.md");
-		const res = await fetch(`https://adventofcode.com/${year}/day/${Number(day)}`, {
+		const url = `https://adventofcode.com/${year}/day/${Number(day)}`;
+		const res = await fetch(url, {
 			headers: {
-				Cookie: typeof Bun !== "undefined" ? Bun.env.AOC_TOKEN : process.env.AOC_TOKEN,
+				Cookie: `session=${typeof Bun !== "undefined" ? Bun.env.AOC_TOKEN : process.env.AOC_TOKEN}`,
 			},
 		});
 
@@ -64,39 +66,25 @@ export async function downloadPuzzle(year: string, day: string) {
 				`Fetching puzzle for ${year}-${day} failed: ${res.status} ${res.statusText}`,
 			);
 		}
-		const html = await res.text();
-		const td = new Turndown({ headingStyle: "atx" });
-
-		function containsChild(node: HTMLElement) {
-			return Array.from(node.children).some((child) => child.matches("span.share"));
-		}
-
-		td.remove(["nav", "header", "title", "script"]);
-		td.addRule("Remove stuff I don't want", {
-			filter: (node) => {
-				return node.id === "sidebar" || containsChild(node);
-			},
-			replacement: () => {
-				return "";
-			},
-		});
-		td.addRule("Format headings", {
-			filter: ["h2"],
-			replacement: (content) => {
-				return `## ${content.replaceAll(/\\?---/g, "").trim()}`;
-			},
-		});
+		const doc = new JSDOM(await res.text(), { url });
+		const reader = new Readability(doc.window.document);
+		const td = new Turndown({ headingStyle: "atx", codeBlockStyle: "fenced" });
 		td.addRule("Remove links", { filter: ["a"], replacement: (content) => content });
+		const html = reader.parse();
 
-		const md = td
-			.turndown(html)
-			.replace("Although it hasn't changed, you can still get your puzzle input.", "")
-			.trim();
-
-		if (typeof Bun !== "undefined") {
-			await Bun.write(downloadPath, md);
+		if (html) {
+			const md = td
+				.turndown(html.content)
+				.replace(/\\?---/g, "")
+				.replace(/##\s+/g, "## ")
+				.replace(/^##/g, "#");
+			if (typeof Bun !== "undefined") {
+				await Bun.write(downloadPath, md);
+			} else {
+				fs.writeFileSync(downloadPath, md);
+			}
 		} else {
-			fs.writeFileSync(downloadPath, md);
+			throw new Error("Failed to parse puzzle html.");
 		}
 	} catch (error) {
 		if (error instanceof Error) {
