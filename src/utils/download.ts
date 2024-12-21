@@ -20,9 +20,7 @@ export async function downloadInput(year: string, day: string) {
 		const downloadPath = path.resolve(getDayPath(year, day), "input.txt");
 		console.log(`Downloading input for ${year} day ${day}...`);
 		const res = await fetch(`https://adventofcode.com/${year}/day/${Number(day)}/input`, {
-			headers: {
-				Cookie: `session=${typeof Bun !== "undefined" ? Bun.env.AOC_TOKEN : process.env.AOC_TOKEN}`,
-			},
+			headers: { Cookie: Bun.env.AOC_TOKEN },
 		});
 
 		if (!res.ok) {
@@ -55,11 +53,7 @@ export async function downloadPuzzle(year: string, day: string) {
 	try {
 		const downloadPath = path.resolve(getDayPath(year, day), "puzzle.md");
 		const url = `https://adventofcode.com/${year}/day/${Number(day)}`;
-		const res = await fetch(url, {
-			headers: {
-				Cookie: `session=${typeof Bun !== "undefined" ? Bun.env.AOC_TOKEN : process.env.AOC_TOKEN}`,
-			},
-		});
+		const res = await fetch(url, { headers: { Cookie: Bun.env.AOC_TOKEN } });
 
 		if (!res.ok) {
 			throw new Error(
