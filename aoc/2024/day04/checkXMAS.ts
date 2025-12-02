@@ -1,5 +1,5 @@
 import type { Direction, Point } from "@/types";
-import { checkOutOfBounds } from "@/utils/grids";
+import { checkOutOfBounds } from "@/utils";
 
 /**
  * Checks if the string "XMAS" can be found in the grid starting from a given point and moving in a specified direction.

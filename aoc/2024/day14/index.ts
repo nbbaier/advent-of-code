@@ -1,15 +1,10 @@
 import { variance } from "mathjs";
 import type { Board, Point } from "@/types";
-import { getRunMode } from "@/utils";
 import { Robot } from "./robot";
 import { sortQudrants } from "./sortQudrants";
 
-const runMode = getRunMode();
-
 function part1(input: string) {
-	const board: Board = ["try", "test"].includes(runMode)
-		? { rows: 7, cols: 11 }
-		: { rows: 103, cols: 101 };
+	const board: Board = { rows: 103, cols: 101 };
 	const robots: Robot[] = input
 		.trim()
 		.split("\n")
@@ -37,9 +32,7 @@ function part1(input: string) {
 function part2(input: string) {
 	// return 0;
 	let currentSeconds = 0;
-	const board: Board = ["try"].includes(runMode)
-		? { rows: 7, cols: 11 }
-		: { rows: 103, cols: 101 };
+	const board: Board = { rows: 103, cols: 101 };
 	const robots: Robot[] = input
 		.trim()
 		.split("\n")

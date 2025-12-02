@@ -1,10 +1,7 @@
 import type { Point } from "@/types";
-import { getRunMode } from "@/utils";
-import { checkOutOfBounds, getNeighbors } from "@/utils/grids";
+import { checkOutOfBounds, getNeighbors } from "@/utils";
 
-const _runMode = getRunMode();
-
-export function createGrid(
+function createGrid(
 	input: string,
 	fn: (cell: string) => boolean = (_cell) => true,
 ) {

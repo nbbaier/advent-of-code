@@ -1,7 +1,3 @@
-import { getRunMode } from "@/utils";
-
-const _runMode = getRunMode();
-
 function part1(input: string): number | string {
 	const measurements = input.trim().split("\n").map(Number);
 

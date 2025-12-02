@@ -1,11 +1,11 @@
-export type Registers = Map<"A" | "B" | "C", number>;
+type Registers = Map<"A" | "B" | "C", number>;
 
 type Instruction = (
 	registers: Registers,
 	operand: number,
 ) => { registers: Registers; nextPointer?: number; output?: number };
 
-export const combos: { [key: number]: number | "A" | "B" | "C" } = {
+const combos: { [key: number]: number | "A" | "B" | "C" } = {
 	0: 0,
 	1: 1,
 	2: 2,
@@ -42,17 +42,17 @@ const createDivInstruction =
 		return { registers };
 	};
 
-export const adv = createDivInstruction("A");
-export const bdv = createDivInstruction("B");
-export const cdv = createDivInstruction("C");
+const adv = createDivInstruction("A");
+const bdv = createDivInstruction("B");
+const cdv = createDivInstruction("C");
 
-export const bxl: Instruction = (registers: Registers, operand: number) => {
+const bxl: Instruction = (registers: Registers, operand: number) => {
 	const B = registers.get("B") || 0;
 	registers.set("B", B ^ operand);
 	return { registers };
 };
 
-export const bst: Instruction = (registers: Registers, operand: number) => {
+const bst: Instruction = (registers: Registers, operand: number) => {
 	const combo = combos[operand];
 	let value: number;
 	if (typeof combo === "string") {
@@ -64,14 +64,14 @@ export const bst: Instruction = (registers: Registers, operand: number) => {
 	return { registers };
 };
 
-export const jnz: Instruction = (registers: Registers, operand: number) => {
+const jnz: Instruction = (registers: Registers, operand: number) => {
 	if (registers.get("A") !== 0) {
 		return { registers, nextPointer: operand };
 	}
 	return { registers };
 };
 
-export const bxc: Instruction = (registers: Registers, _operand: number) => {
+const bxc: Instruction = (registers: Registers, _operand: number) => {
 	const B = registers.get("B") || 0;
 	const C = registers.get("C") || 0;
 
@@ -79,7 +79,7 @@ export const bxc: Instruction = (registers: Registers, _operand: number) => {
 	return { registers };
 };
 
-export const out: Instruction = (registers: Registers, operand: number) => {
+const out: Instruction = (registers: Registers, operand: number) => {
 	const combo = combos[operand];
 	let value: number;
 	if (typeof combo === "string") {
@@ -91,7 +91,7 @@ export const out: Instruction = (registers: Registers, operand: number) => {
 	return { registers, output: value % 8 };
 };
 
-export const opcodes: { [key: number]: Instruction } = {
+const opcodes: { [key: number]: Instruction } = {
 	0: adv,
 	1: bxl,
 	2: bst,
@@ -102,7 +102,7 @@ export const opcodes: { [key: number]: Instruction } = {
 	7: cdv,
 };
 
-export function runProgram(
+function runProgram(
 	program: number[],
 	registers: Registers,
 	_returnReg = false,

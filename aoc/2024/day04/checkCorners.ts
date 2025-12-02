@@ -1,5 +1,5 @@
 import type { Point } from "@/types";
-import { checkOutOfBounds } from "@/utils/grids";
+import { checkOutOfBounds } from "@/utils";
 import { directions } from ".";
 
 /**

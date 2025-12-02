@@ -1,7 +1,3 @@
-import { getRunMode } from "@/utils";
-
-const _runMode = getRunMode();
-
 function parse(input: string) {
 	const [patterns, _, ...designs] = input.trim().split("\n");
 	return [

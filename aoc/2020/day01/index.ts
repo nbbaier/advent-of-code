@@ -1,7 +1,3 @@
-import { getRunMode } from "@/utils";
-
-const _runMode = getRunMode();
-
 function parse(input: string) {
 	return input.trim().split("\n").map(Number);
 }

@@ -1,9 +1,6 @@
 import { DefaultDictionary as DDict } from "typescript-collections";
 import type { Cardinal, Point } from "@/types";
-import { getRunMode, includesObject } from "@/utils";
-import { createGrid, getNeighbors } from "@/utils/grids";
-
-const _runMode = getRunMode();
+import { createGrid, getNeighbors, includesObject } from "@/utils";
 
 const _isWall = (x: string) => x !== "#";
 
