@@ -5,6 +5,27 @@ import { JSDOM } from "jsdom";
 import Turndown from "turndown";
 import { getDayPath } from ".";
 
+function assertSessionToken(): void {
+	if (!Bun.env.AOC_SESSION) {
+		console.error(
+			"Error: AOC_SESSION environment variable is not set.\n" +
+				"Please create a .env file with your session cookie:\n\n" +
+				"  AOC_SESSION=your_session_cookie_here\n\n" +
+				"You can find your session cookie in your browser's developer tools\n" +
+				"after logging into adventofcode.com.",
+		);
+		process.exit(1);
+	}
+}
+
+async function writeFile(filePath: string, content: string): Promise<void> {
+	if (typeof Bun !== "undefined") {
+		await Bun.write(filePath, content);
+	} else {
+		fs.writeFileSync(filePath, content);
+	}
+}
+
 /**
  * Downloads the input data for a specific day of Advent of Code and saves it to a file.
  *
@@ -16,13 +37,14 @@ import { getDayPath } from ".";
  */
 
 export async function downloadInput(year: string, day: string) {
+	assertSessionToken();
 	try {
 		const downloadPath = path.resolve(getDayPath(year, day), "input.txt");
 		console.log(`Downloading input for ${year} day ${day}...`);
 		const res = await fetch(
 			`https://adventofcode.com/${year}/day/${Number(day)}/input`,
 			{
-				headers: { Cookie: `session=${Bun.env.AOC_TOKEN}` },
+				headers: { Cookie: `session=${Bun.env.AOC_SESSION}` },
 			},
 		);
 
@@ -33,11 +55,7 @@ export async function downloadInput(year: string, day: string) {
 		}
 
 		const text = await res.text();
-		if (typeof Bun !== "undefined") {
-			await Bun.write(downloadPath, text);
-		} else {
-			fs.writeFileSync(downloadPath, text);
-		}
+		await writeFile(downloadPath, text);
 	} catch (error) {
 		if (error instanceof Error) {
 			console.error(error.message);
@@ -55,10 +73,11 @@ export async function downloadInput(year: string, day: string) {
  * @throws Will throw an error if the fetch request fails or if the puzzle HTML cannot be parsed.
  */
 export async function downloadPuzzle(year: string, day: string) {
+	assertSessionToken();
 	try {
 		const downloadPath = path.resolve(getDayPath(year, day), "puzzle.md");
 		const url = `https://adventofcode.com/${year}/day/${Number(day)}`;
-		const res = await fetch(url, { headers: { Cookie: Bun.env.AOC_TOKEN } });
+		const res = await fetch(url, { headers: { Cookie: `session=${Bun.env.AOC_SESSION}` } });
 
 		if (!res.ok) {
 			throw new Error(
@@ -80,11 +99,7 @@ export async function downloadPuzzle(year: string, day: string) {
 				.replace(/\\?---/g, "")
 				.replace(/##\s+/g, "## ")
 				.replace(/^##/g, "#");
-			if (typeof Bun !== "undefined") {
-				await Bun.write(downloadPath, md);
-			} else {
-				fs.writeFileSync(downloadPath, md);
-			}
+			await writeFile(downloadPath, md);
 		} else {
 			throw new Error("Failed to parse puzzle html.");
 		}

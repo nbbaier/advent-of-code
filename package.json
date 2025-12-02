@@ -7,6 +7,7 @@
 		"scaffold": "MODE=scaffold bun src/index.ts",
 		"attempt": "MODE=attempt bun src/index.ts",
 		"read": "MODE=read bun src/index.ts",
+		"refresh": "MODE=refresh bun src/index.ts",
 		"check": "vitest run",
 		"watch": "vitest watch"
 	},
@@ -17,7 +18,6 @@
 		"jsdom": "^25.0.1",
 		"mathjs": "^14.9.1",
 		"toposort": "^2.0.2",
-		"ts-pattern": "^5.9.0",
 		"turndown": "^7.2.2",
 		"typescript-collections": "^1.3.3",
 		"zod": "^3.25.76"

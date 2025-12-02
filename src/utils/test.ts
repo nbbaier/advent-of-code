@@ -12,6 +12,11 @@ export function createTestMap(examples: TestData[]): TestMap {
 	const testMap: TestMap = new Map();
 
 	for (const obj of examples) {
+		if (obj.output === 0) {
+			console.warn(
+				`\x1b[33m⚠ Warning: Test "${obj.name || "unnamed"}" has output: 0 (placeholder value)\x1b[0m`,
+			);
+		}
 		const testKey = obj.name ? obj.name : `${obj.input} = ${obj.output}`;
 		testMap.set(testKey, obj);
 	}

@@ -1,6 +1,6 @@
 declare module "bun" {
 	interface Env {
-		AOC_TOKEN: string;
+		AOC_SESSION: string;
 		MODE: string;
 	}
 }
