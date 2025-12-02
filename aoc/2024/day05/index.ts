@@ -1,5 +1,5 @@
-import { getMiddleIndex } from "@/utils";
 import toposort from "toposort";
+import { getMiddleIndex } from "@/utils";
 
 function parse(input: string) {
 	const contents = input.trim().split("\n\n");
@@ -55,7 +55,7 @@ function part1(input: string): number | string {
 			return update[i];
 		})
 		.reduce((acc, curr) => {
-			return acc + (curr !== null ? Number.parseInt(curr) : 0);
+			return acc + (curr !== null ? Number.parseInt(curr, 10) : 0);
 		}, 0);
 }
 
@@ -88,7 +88,7 @@ function part2(input: string): number | string {
 			return update[i];
 		})
 		.reduce((acc, curr) => {
-			return acc + (curr !== null ? Number.parseInt(curr) : 0);
+			return acc + (curr !== null ? Number.parseInt(curr, 10) : 0);
 		}, 0);
 }
 

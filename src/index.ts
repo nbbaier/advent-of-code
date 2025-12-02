@@ -1,8 +1,8 @@
-import path from "node:path";
 import fs from "node:fs";
-import { createFromTemplate, getDayPath, loadFile, getRunMode } from "./utils";
-import { downloadInput, downloadPuzzle } from "./utils/download";
+import path from "node:path";
 import { z } from "zod";
+import { createFromTemplate, getDayPath, getRunMode, loadFile } from "./utils";
+import { downloadInput, downloadPuzzle } from "./utils/download";
 
 const modeSchema = z.enum(["scaffold", "attempt", "try", "test", "read"]);
 type Mode = z.infer<typeof modeSchema>;

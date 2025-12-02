@@ -1,4 +1,4 @@
-import type { Point, Velocity, Board } from "@/types";
+import type { Board, Point, Velocity } from "@/types";
 
 export class Robot {
 	position: Point;
@@ -19,8 +19,10 @@ export class Robot {
 		const newX = this.position.x + this.velocity.dx * steps;
 		const newY = this.position.y + this.velocity.dy * steps;
 
-		const realX = ((newX % this.board.cols) + this.board.cols) % this.board.cols;
-		const realY = ((newY % this.board.rows) + this.board.rows) % this.board.rows;
+		const realX =
+			((newX % this.board.cols) + this.board.cols) % this.board.cols;
+		const realY =
+			((newY % this.board.rows) + this.board.rows) % this.board.rows;
 
 		this.position = {
 			x: realX,

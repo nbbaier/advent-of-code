@@ -1,10 +1,13 @@
 import { getRunMode } from "@/utils";
 
-const runMode = getRunMode();
+const _runMode = getRunMode();
 
 function parse(input: string) {
 	const [patterns, _, ...designs] = input.trim().split("\n");
-	return [patterns.split(",").map((d) => d.trim()), designs.map((d) => d.trim())];
+	return [
+		patterns.split(",").map((d) => d.trim()),
+		designs.map((d) => d.trim()),
+	];
 }
 
 function isValidDesign(design: string, patterns: string[]): boolean {

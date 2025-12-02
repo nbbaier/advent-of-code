@@ -17,9 +17,9 @@ export function checkCorners(
 	rows: number,
 	cols: number,
 ): boolean {
-	const region: string[][] = [];
+	const _region: string[][] = [];
 	const corners = Object.fromEntries(
-		Object.entries(directions).filter(([k, v]) => k.length === 2),
+		Object.entries(directions).filter(([k, _v]) => k.length === 2),
 	);
 
 	for (const corner of Object.entries(corners)) {

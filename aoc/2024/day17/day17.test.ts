@@ -1,8 +1,8 @@
 import path from "node:path";
+import { describe } from "vitest";
 import type { TestData, TestMap } from "@/types";
 import { getDayPath, loadFile } from "@/utils";
 import { createTestMap, createTestSet } from "@/utils/test";
-import { describe, test } from "vitest";
 import solution from ".";
 
 const year = "2024";

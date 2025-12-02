@@ -1,13 +1,12 @@
-import path from "node:path";
-import type { TestData, TestMap } from "@/types";
-import { getDayPath, loadFile } from "@/utils";
-import { createTestMap, createTestSet } from "@/utils/test";
 import { describe } from "vitest";
+import type { TestData, TestMap } from "@/types";
+import { getDayPath } from "@/utils";
+import { createTestMap, createTestSet } from "@/utils/test";
 import solution from ".";
 
 const year = "2015";
 const day = "02";
-const dayPath = getDayPath(year, day);
+const _dayPath = getDayPath(year, day);
 
 const examples1: TestData[] = [
 	{ input: "2x3x4", output: 58 },

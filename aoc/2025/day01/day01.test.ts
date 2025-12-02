@@ -5,7 +5,7 @@ import { getDayPath, loadFile } from "@/utils";
 import { createTestMap, createTestSet } from "@/utils/test";
 import solution from ".";
 
-const year = "2020";
+const year = "2025";
 const day = "01";
 const dayPath = getDayPath(year, day);
 
@@ -13,14 +13,14 @@ const examples1: TestData[] = [
 	{
 		name: "tests for p1",
 		input: loadFile(path.resolve(dayPath, "sample.txt")),
-		output: 514579,
+		output: 3,
 	},
 ];
 const examples2: TestData[] = [
 	{
 		name: "tests for p2",
 		input: loadFile(path.resolve(dayPath, "sample.txt")),
-		output: 0,
+		output: 6,
 	},
 ];
 

@@ -1,6 +1,6 @@
 import { getRunMode } from "@/utils";
 
-const runMode = getRunMode();
+const _runMode = getRunMode();
 
 function part1(input: string): number | string {
 	const measurements = input.trim().split("\n").map(Number);
@@ -15,7 +15,7 @@ function part1(input: string): number | string {
 	return count;
 }
 
-function part2(input: string): number | string {
+function part2(_input: string): number | string {
 	return 0;
 }
 

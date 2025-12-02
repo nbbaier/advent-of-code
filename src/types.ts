@@ -85,7 +85,10 @@ export type DirectionSet = {
  * @param rule.out - The string to replace the matched pattern with.
  * @returns The resulting string after applying the replacement rule.
  */
-export type ReplacerFn = (input: string, rule: { in: string | RegExp; out: string }) => string;
+export type ReplacerFn = (
+	input: string,
+	rule: { in: string | RegExp; out: string },
+) => string;
 
 /**
  * Represents the cardinal directions by omitting the diagonal directions

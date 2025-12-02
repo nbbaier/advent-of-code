@@ -1,17 +1,17 @@
-import type { Cardinal, Point } from "@/types";
-import { getRunMode, includesObject, popFromSet } from "@/utils";
-import { createGrid, getNeighbors } from "@/utils/grids";
 import { DefaultDictionary as DDict } from "typescript-collections";
+import type { Cardinal, Point } from "@/types";
+import { getRunMode, includesObject } from "@/utils";
+import { createGrid, getNeighbors } from "@/utils/grids";
 
-const runMode = getRunMode();
+const _runMode = getRunMode();
 
-const isWall = (x: string) => x !== "#";
+const _isWall = (x: string) => x !== "#";
 
 function part1(input: string): number | string {
 	const grid = createGrid(input);
 	const gridEntries = Array.from(grid.entries());
-	const startEntry = gridEntries.find(([k, v]) => v === "S");
-	const endEntry = gridEntries.find(([k, v]) => v === "E");
+	const startEntry = gridEntries.find(([_k, v]) => v === "S");
+	const endEntry = gridEntries.find(([_k, v]) => v === "E");
 	if (!startEntry || !endEntry) {
 		throw new Error("Start point or end point not found in the grid");
 	}
@@ -27,12 +27,12 @@ function part1(input: string): number | string {
 		y: endEntry[0].split(",").map(Number)[1],
 	};
 
-	const shortestPath = findShortestPath(start, target, grid, "r");
+	const _shortestPath = findShortestPath(start, target, grid, "r");
 
 	return 0; // shortestPath ? shortestPath.score : 0;
 }
 
-function part2(input: string): number | string {
+function part2(_input: string): number | string {
 	return 0;
 }
 
@@ -44,8 +44,12 @@ function distanceToTarget(start: Point, target: Point): number {
 	return Math.abs(start.x - target.x) + Math.abs(start.y - target.y);
 }
 
-function smallestFScore(fScore: DDict<State, number>, openSet: Set<string>): State {
-	const popped = Array.from(openSet)[Math.floor(Math.random() * Array.from(openSet).length)];
+function smallestFScore(
+	fScore: DDict<State, number>,
+	openSet: Set<string>,
+): State {
+	const popped =
+		Array.from(openSet)[Math.floor(Math.random() * Array.from(openSet).length)];
 	openSet.delete(popped);
 
 	const first = JSON.parse(popped);
@@ -73,7 +77,9 @@ function getNextDirection(current: Point, neighor: Point) {
 		["1,0", "r"],
 		["-1,0", "l"],
 	]);
-	return next.get(`${current.x - neighor.x},${current.y - neighor.y}`) as Cardinal;
+	return next.get(
+		`${current.x - neighor.x},${current.y - neighor.y}`,
+	) as Cardinal;
 }
 
 function findShortestPath(
@@ -87,8 +93,14 @@ function findShortestPath(
 	console.log(openSet);
 	const cameFrom = new Map<string, string>();
 
-	const gScore = new DDict<State, number>(() => Number.POSITIVE_INFINITY, JSON.stringify);
-	const fScore = new DDict<State, number>(() => Number.POSITIVE_INFINITY, JSON.stringify);
+	const gScore = new DDict<State, number>(
+		() => Number.POSITIVE_INFINITY,
+		JSON.stringify,
+	);
+	const fScore = new DDict<State, number>(
+		() => Number.POSITIVE_INFINITY,
+		JSON.stringify,
+	);
 
 	gScore.setValue([start, direction], 0);
 	fScore.setValue([start, direction], distanceToTarget(start, target));
@@ -98,7 +110,10 @@ function findShortestPath(
 			const score = gScore.getValue([current, direction]);
 
 			return {
-				path: [...reconstructPath(cameFrom, [current, direction]), [current, direction]],
+				path: [
+					...reconstructPath(cameFrom, [current, direction]),
+					[current, direction],
+				],
 				score,
 			};
 		}
@@ -147,12 +162,18 @@ function reconstructPath(cameFrom: Map<string, string>, _item: State): State[] {
 	return path.reverse();
 }
 
-function getValidNeighbors(current: Point, grid: Map<string, string>, path: State[]): Point[] {
+function getValidNeighbors(
+	current: Point,
+	grid: Map<string, string>,
+	path: State[],
+): Point[] {
 	const neighbors = getNeighbors(current);
 	const _path = path.map(([coord, _]) => coord);
 
 	return neighbors.filter((neighbor) => {
 		// const { x, y } = neighbor;
-		return grid.get(JSON.stringify(neighbor)) && includesObject(_path, neighbor);
+		return (
+			grid.get(JSON.stringify(neighbor)) && includesObject(_path, neighbor)
+		);
 	});
 }

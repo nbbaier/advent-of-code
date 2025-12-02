@@ -9,7 +9,12 @@ import type { Point } from "@/types";
  * @param cols - The number of columns in the grid.
  * @returns `true` if the coordinates are out of bounds, `false` otherwise.
  */
-export function checkOutOfBounds(x: number, y: number, rows: number, cols: number): boolean {
+export function checkOutOfBounds(
+	x: number,
+	y: number,
+	rows: number,
+	cols: number,
+): boolean {
 	return x < 0 || x >= cols || y < 0 || y >= rows;
 }
 
@@ -22,7 +27,10 @@ export function getNeighbors(current: Point): Point[] {
 	].map(([dx, dy]) => ({ x: current.x + dx, y: current.y + dy }));
 }
 
-export function createGrid(input: string, fn: (cell: string) => boolean = (cell) => true) {
+export function createGrid(
+	input: string,
+	fn: (cell: string) => boolean = (_cell) => true,
+) {
 	const data: string[][] = input
 		.trim()
 		.split("\n")

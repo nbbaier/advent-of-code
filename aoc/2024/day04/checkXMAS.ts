@@ -1,4 +1,4 @@
-import type { Point, Direction } from "@/types";
+import type { Direction, Point } from "@/types";
 import { checkOutOfBounds } from "@/utils/grids";
 
 /**

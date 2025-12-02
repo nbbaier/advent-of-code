@@ -1,6 +1,6 @@
-import type { ReplacerFn } from "@/types";
 import fs from "node:fs";
 import path from "node:path";
+import type { ReplacerFn } from "@/types";
 
 /**
  * Reads the content of a file synchronously and returns it as a string.
@@ -31,7 +31,9 @@ export function getDayPath(year: string, day: string): string {
  * @returns {T[][]} An array of arrays, each with one element removed from the original array.
  */
 export function dropOne<T>(arr: T[]): T[][] {
-	return arr.map((_, index) => arr.filter((_, filterIndex) => filterIndex !== index));
+	return arr.map((_, index) =>
+		arr.filter((_, filterIndex) => filterIndex !== index),
+	);
 }
 
 /**
@@ -43,7 +45,10 @@ export function dropOne<T>(arr: T[]): T[][] {
  *   - `out`: The string to replace the matched pattern with.
  * @returns The modified string with all replacements made.
  */
-function defaultReplacer(input: string, rule: { in: string | RegExp; out: string }): string {
+function defaultReplacer(
+	input: string,
+	rule: { in: string | RegExp; out: string },
+): string {
 	return input.replaceAll(rule.in, rule.out);
 }
 
@@ -72,7 +77,9 @@ export async function createFromTemplate(
 		fn?: ReplacerFn;
 	}[],
 ): Promise<void> {
-	const templateText = loadFile(path.resolve("./aoc/templates", `${template}.template.ts`));
+	const templateText = loadFile(
+		path.resolve("./aoc/templates", `${template}.template.ts`),
+	);
 	if (!variables) {
 		await Bun.write(targetPath, templateText);
 		return;
@@ -117,7 +124,8 @@ export function getMiddleIndex<T>(arr: T[]): number | null {
  * @param ms - The number of milliseconds to delay.
  * @returns A promise that resolves after the specified delay.
  */
-export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+export const delay = (ms: number) =>
+	new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * Retrieves the current run mode of the application.

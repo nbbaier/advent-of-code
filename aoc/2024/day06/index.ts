@@ -98,10 +98,9 @@ function createLab({ grid }: { grid: string[][] }): Lab {
  * @returns {GuardState} The initial state of the guard, including position, visited cells, and facing direction.
  */
 function initializeGuard(lab: Lab): GuardState {
-	const [key, _] = Array.from(lab.cells.entries()).find(([_, cell]) => cell.raw === "^") as [
-		string,
-		Cell,
-	];
+	const [key, _] = Array.from(lab.cells.entries()).find(
+		([_, cell]) => cell.raw === "^",
+	) as [string, Cell];
 	const [x, y] = key.split(",").map(Number);
 	const startPoint = { x, y };
 	return { position: startPoint, visited: [], facing: "u" };
@@ -184,7 +183,7 @@ function part1(input: string): number | string {
 	return new Set(guardState.visited.map((p) => `${p.x},${p.y}`)).size;
 }
 
-function part2(input: string) {
+function part2(_input: string) {
 	return "not implemented";
 }
 

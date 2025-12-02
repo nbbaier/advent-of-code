@@ -15,8 +15,8 @@ function createLists(data: string): {
 
 	for (const pair of pairs) {
 		const splitPair = pair.split(/\s+/);
-		left.push(Number.parseInt(splitPair[0]));
-		right.push(Number.parseInt(splitPair[1]));
+		left.push(Number.parseInt(splitPair[0], 10));
+		right.push(Number.parseInt(splitPair[1], 10));
 	}
 
 	return { left, right };
@@ -31,9 +31,12 @@ function part1(input: string): number | string {
 		return Math.abs(num - rightSorted[index]);
 	});
 
-	const totalDifference = absoluteDifferences.reduce((accumulator, currentValue) => {
-		return accumulator + currentValue;
-	}, 0);
+	const totalDifference = absoluteDifferences.reduce(
+		(accumulator, currentValue) => {
+			return accumulator + currentValue;
+		},
+		0,
+	);
 
 	return totalDifference;
 }

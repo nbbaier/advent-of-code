@@ -17,7 +17,9 @@ export const combos: { [key: number]: number | "A" | "B" | "C" } = {
 
 function getComboValue(registers: Registers, operand: number): number {
 	const combo = combos[operand];
-	return typeof combo === "string" ? registers.get(combo as "A" | "B" | "C") || 0 : combo;
+	return typeof combo === "string"
+		? registers.get(combo as "A" | "B" | "C") || 0
+		: combo;
 }
 
 function parse(input: string): [Registers, number[]] {
@@ -69,7 +71,7 @@ export const jnz: Instruction = (registers: Registers, operand: number) => {
 	return { registers };
 };
 
-export const bxc: Instruction = (registers: Registers, operand: number) => {
+export const bxc: Instruction = (registers: Registers, _operand: number) => {
 	const B = registers.get("B") || 0;
 	const C = registers.get("C") || 0;
 
@@ -103,7 +105,7 @@ export const opcodes: { [key: number]: Instruction } = {
 export function runProgram(
 	program: number[],
 	registers: Registers,
-	returnReg = false,
+	_returnReg = false,
 ): number[] {
 	let currentRegisters = registers;
 	let pointer = 0;
@@ -113,7 +115,11 @@ export function runProgram(
 		const opcode = program[pointer];
 		const operand = program[pointer + 1];
 		const fn = opcodes[opcode as keyof typeof opcodes];
-		const { registers: updatedRegisters, nextPointer, output } = fn(currentRegisters, operand);
+		const {
+			registers: updatedRegisters,
+			nextPointer,
+			output,
+		} = fn(currentRegisters, operand);
 		currentRegisters = updatedRegisters;
 
 		if (output !== undefined) {

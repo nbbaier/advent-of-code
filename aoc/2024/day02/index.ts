@@ -4,7 +4,7 @@ function parse(input: string) {
 	return input
 		.trim()
 		.split("\n")
-		.map((r) => r.split(" ").map((i) => Number.parseInt(i)));
+		.map((r) => r.split(" ").map((i) => Number.parseInt(i, 10)));
 }
 
 /**

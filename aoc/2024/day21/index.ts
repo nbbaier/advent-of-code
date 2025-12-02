@@ -1,12 +1,13 @@
-import { arrowDirections as arrows } from "@/constants";
 import type { Point } from "@/types";
 import { getRunMode } from "@/utils";
 import { checkOutOfBounds, getNeighbors } from "@/utils/grids";
-import type { S } from "vitest/dist/chunks/config.Cy0C388Z.js";
 
-const runMode = getRunMode();
+const _runMode = getRunMode();
 
-export function createGrid(input: string, fn: (cell: string) => boolean = (cell) => true) {
+export function createGrid(
+	input: string,
+	fn: (cell: string) => boolean = (_cell) => true,
+) {
 	const data: string[][] = input
 		.trim()
 		.split("\n")
@@ -30,8 +31,8 @@ export function createGrid(input: string, fn: (cell: string) => boolean = (cell)
 	return grid;
 }
 
-const numPad = createGrid("789\n456\n123\n.0A", (cell) => cell !== ".");
-const dirPad = createGrid(".^A\n<v>", (cell) => cell !== ".");
+const _numPad = createGrid("789\n456\n123\n.0A", (cell) => cell !== ".");
+const _dirPad = createGrid(".^A\n<v>", (cell) => cell !== ".");
 
 function part1(input: string): number | string {
 	const codes = input.trim().split("\n");
@@ -39,13 +40,18 @@ function part1(input: string): number | string {
 	return codes[0];
 }
 
-function part2(input: string): number | string {
+function part2(_input: string): number | string {
 	return 0;
 }
 
 export default { p1: part1, p2: part2 };
 
-function findPaths(start: Point, end: Point, rows: number, cols: number): Point[][] {
+function _findPaths(
+	start: Point,
+	end: Point,
+	rows: number,
+	cols: number,
+): Point[][] {
 	const paths: Point[][] = [];
 	const visited = new Set<string>();
 
@@ -60,7 +66,9 @@ function findPaths(start: Point, end: Point, rows: number, cols: number): Point[
 		visited.add(key);
 
 		const neighbors = getNeighbors(current).filter(
-			(p) => !checkOutOfBounds(p.x, p.y, rows, cols) && !visited.has(JSON.stringify(p)),
+			(p) =>
+				!checkOutOfBounds(p.x, p.y, rows, cols) &&
+				!visited.has(JSON.stringify(p)),
 		);
 
 		for (const next of neighbors) {

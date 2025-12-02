@@ -81,7 +81,9 @@ function part2(input: string): number | string {
 			return { l, w, h };
 		});
 
-	return boxes.map((box) => calcBow(box) + calcPerimeter(box)).reduce((a, c) => a + c);
+	return boxes
+		.map((box) => calcBow(box) + calcPerimeter(box))
+		.reduce((a, c) => a + c);
 }
 
 export default { p1: part1, p2: part2 };

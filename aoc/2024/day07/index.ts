@@ -84,7 +84,9 @@ function generateOpSets(n: number): string[][] {
 	const combinations: string[][] = [];
 	for (let i = 0; i < totalCombinations; i++) {
 		const binary = i.toString(2).padStart(operators, "0");
-		const opCombination = binary.split("").map((bit) => (bit === "0" ? "*" : "+"));
+		const opCombination = binary
+			.split("")
+			.map((bit) => (bit === "0" ? "*" : "+"));
 		combinations.push(opCombination);
 	}
 

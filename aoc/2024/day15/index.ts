@@ -2,7 +2,7 @@ import { arrowDirections as directions } from "@/constants";
 
 type Board = Map<string, string>;
 
-function drawBoard(board: Board): string {
+function _drawBoard(board: Board): string {
 	const result = Array(8)
 		.fill("")
 		.map(() => Array(8).fill(""));
@@ -33,7 +33,11 @@ function moveRobot(
 	const oldKey = `${robot[0]},${robot[1]}`;
 	const newKey = `${newX},${newY}`;
 
-	function canMoveChain(x: number, y: number, visited = new Set<string>()): boolean {
+	function canMoveChain(
+		x: number,
+		y: number,
+		visited = new Set<string>(),
+	): boolean {
 		const key = `${x},${y}`;
 		if (visited.has(key)) return false;
 		visited.add(key);
@@ -114,7 +118,7 @@ function part1(input: string): number | string {
 	return getGPS(board).reduce((a, c) => a + c, 0);
 }
 
-function part2(input: string): number | string {
+function part2(_input: string): number | string {
 	return 0;
 }
 

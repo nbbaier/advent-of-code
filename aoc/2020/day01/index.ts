@@ -1,6 +1,6 @@
 import { getRunMode } from "@/utils";
 
-const runMode = getRunMode();
+const _runMode = getRunMode();
 
 function parse(input: string) {
 	return input.trim().split("\n").map(Number);
@@ -21,7 +21,7 @@ function part1(input: string): number | string {
 	return answer.reduce((a, c) => a * c, 1);
 }
 
-function part2(input: string): number | string {
+function part2(_input: string): number | string {
 	return 0;
 }
 

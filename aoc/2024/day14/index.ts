@@ -1,8 +1,8 @@
-import type { Board, Point } from "@/types";
 import { variance } from "mathjs";
+import type { Board, Point } from "@/types";
+import { getRunMode } from "@/utils";
 import { Robot } from "./robot";
 import { sortQudrants } from "./sortQudrants";
-import { getRunMode } from "@/utils";
 
 const runMode = getRunMode();
 

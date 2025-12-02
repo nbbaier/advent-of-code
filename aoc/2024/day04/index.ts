@@ -1,5 +1,5 @@
-import { checkXMAS } from "./checkXMAS";
 import { checkCorners } from "./checkCorners";
+import { checkXMAS } from "./checkXMAS";
 
 export const directions = {
 	r: { dx: 1, dy: 0 }, // right

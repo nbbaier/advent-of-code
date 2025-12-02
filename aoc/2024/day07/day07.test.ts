@@ -1,8 +1,8 @@
 import path from "node:path";
+import { describe } from "vitest";
 import type { TestData, TestMap } from "@/types";
 import { getDayPath, loadFile } from "@/utils";
 import { createTestMap, createTestSet } from "@/utils/test";
-import { describe } from "vitest";
 import solution from ".";
 
 const year = "2024";
@@ -17,7 +17,11 @@ const examples1: TestData[] = [
 	},
 ];
 const examples2: TestData[] = [
-	{ name: "=> 11387", input: loadFile(path.resolve(dayPath, "sample.txt")), output: 11387 },
+	{
+		name: "=> 11387",
+		input: loadFile(path.resolve(dayPath, "sample.txt")),
+		output: 11387,
+	},
 ];
 
 const testMap1: TestMap = createTestMap(examples1);

@@ -19,12 +19,17 @@ export async function downloadInput(year: string, day: string) {
 	try {
 		const downloadPath = path.resolve(getDayPath(year, day), "input.txt");
 		console.log(`Downloading input for ${year} day ${day}...`);
-		const res = await fetch(`https://adventofcode.com/${year}/day/${Number(day)}/input`, {
-			headers: { Cookie: `session=${Bun.env.AOC_TOKEN}` },
-		});
+		const res = await fetch(
+			`https://adventofcode.com/${year}/day/${Number(day)}/input`,
+			{
+				headers: { Cookie: `session=${Bun.env.AOC_TOKEN}` },
+			},
+		);
 
 		if (!res.ok) {
-			throw new Error(`Fetching data ${year}-${day} failed: ${res.status} ${res.statusText}`);
+			throw new Error(
+				`Fetching data ${year}-${day} failed: ${res.status} ${res.statusText}`,
+			);
 		}
 
 		const text = await res.text();
@@ -63,7 +68,10 @@ export async function downloadPuzzle(year: string, day: string) {
 		const doc = new JSDOM(await res.text(), { url });
 		const reader = new Readability(doc.window.document);
 		const td = new Turndown({ headingStyle: "atx", codeBlockStyle: "fenced" });
-		td.addRule("Remove links", { filter: ["a"], replacement: (content) => content });
+		td.addRule("Remove links", {
+			filter: ["a"],
+			replacement: (content) => content,
+		});
 		const html = reader.parse();
 
 		if (html) {

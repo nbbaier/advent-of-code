@@ -1,10 +1,10 @@
+import { describe } from "vitest";
 import type { TestData, TestMap } from "@/types";
 import { createTestMap, createTestSet } from "@/utils/test";
-import { describe } from "vitest";
 import solution from ".";
 
-const year = "2015";
-const day = "04";
+const _year = "2015";
+const _day = "04";
 
 const examples1: TestData[] = [
 	{ input: "abcdef", output: 609043 },
