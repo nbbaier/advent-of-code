@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
-import Turndown from "turndown";
-import { getDayPath } from ".";
 import { Readability } from "@mozilla/readability";
 import { JSDOM } from "jsdom";
+import Turndown from "turndown";
+import { getDayPath } from ".";
 
 /**
  * Downloads the input data for a specific day of Advent of Code and saves it to a file.
@@ -20,7 +20,7 @@ export async function downloadInput(year: string, day: string) {
 		const downloadPath = path.resolve(getDayPath(year, day), "input.txt");
 		console.log(`Downloading input for ${year} day ${day}...`);
 		const res = await fetch(`https://adventofcode.com/${year}/day/${Number(day)}/input`, {
-			headers: { Cookie: Bun.env.AOC_TOKEN },
+			headers: { Cookie: `session=${Bun.env.AOC_TOKEN}` },
 		});
 
 		if (!res.ok) {
