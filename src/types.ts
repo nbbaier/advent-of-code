@@ -63,7 +63,7 @@ export type Direction = {
  * - `"dr"`: Down-Right
  * - `"ul"`: Up-Left
  */
-export type DirLabel = "r" | "l" | "d" | "u" | "ur" | "dl" | "dr" | "ul";
+type DirLabel = "r" | "l" | "d" | "u" | "ur" | "dl" | "dr" | "ul";
 
 /**
  * Represents a set of directions, where each key is a label of type `DirLabel`
@@ -75,20 +75,6 @@ export type DirLabel = "r" | "l" | "d" | "u" | "ur" | "dl" | "dr" | "ul";
 export type DirectionSet = {
 	[K in DirLabel]?: Direction;
 };
-
-/**
- * A function type that defines a replacer function.
- *
- * @param input - The input string to be processed.
- * @param rule - An object containing the replacement rule.
- * @param rule.in - The string or regular expression to be replaced.
- * @param rule.out - The string to replace the matched pattern with.
- * @returns The resulting string after applying the replacement rule.
- */
-export type ReplacerFn = (
-	input: string,
-	rule: { in: string | RegExp; out: string },
-) => string;
 
 /**
  * Represents the cardinal directions by omitting the diagonal directions

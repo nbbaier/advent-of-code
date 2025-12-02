@@ -1,7 +1,3 @@
-import { getRunMode } from "@/utils";
-
-const _runMode = getRunMode();
-
 function part1(_input: string): number | string {
 	return 0;
 }
@@ -11,3 +7,4 @@ function part2(_input: string): number | string {
 }
 
 export default { p1: part1, p2: part2 };
+

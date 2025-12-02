@@ -1,113 +1,145 @@
 import fs from "node:fs";
 import path from "node:path";
-import { Readability } from "@mozilla/readability";
+import { Defuddle } from "defuddle/node";
 import { JSDOM } from "jsdom";
-import Turndown from "turndown";
+import type { Heading, Root, Yaml } from "mdast";
+import remarkFrontmatter from "remark-frontmatter";
+import remarkNormalizeHeadings from "remark-normalize-headings";
+import remarkParse from "remark-parse";
+import remarkStringify from "remark-stringify";
+import remarkUnlink from "remark-unlink";
+import { unified } from "unified";
+import { stringify as stringifyYaml } from "yaml";
+
 import { getDayPath } from ".";
 
-function assertSessionToken(): void {
+async function ensureDirectory(filePath: string): Promise<void> {
+	const dir = path.dirname(filePath);
+	if (!fs.existsSync(dir)) {
+		fs.mkdirSync(dir, { recursive: true });
+	}
+}
+
+async function fetchAoCResource(
+	year: string,
+	day: string,
+	endpoint: string,
+): Promise<{ text: string; url: string; dom: JSDOM }> {
 	if (!Bun.env.AOC_SESSION) {
-		console.error(
-			"Error: AOC_SESSION environment variable is not set.\n" +
-				"Please create a .env file with your session cookie:\n\n" +
-				"  AOC_SESSION=your_session_cookie_here\n\n" +
-				"You can find your session cookie in your browser's developer tools\n" +
-				"after logging into adventofcode.com.",
-		);
+		console.error("Error: AOC_SESSION environment variable is not set.\n");
 		process.exit(1);
 	}
-}
+	const url = `https://adventofcode.com/${year}/day/${Number(day)}${endpoint}`;
+	const res = await fetch(url, {
+		headers: { Cookie: `session=${Bun.env.AOC_SESSION}` },
+	});
 
-async function writeFile(filePath: string, content: string): Promise<void> {
-	if (typeof Bun !== "undefined") {
-		await Bun.write(filePath, content);
-	} else {
-		fs.writeFileSync(filePath, content);
+	const text = await res.text();
+	const dom = new JSDOM(text);
+
+	if (!res.ok) {
+		throw new Error(
+			`Fetching ${endpoint} for ${year}-${day} failed: ${res.status} ${res.statusText}`,
+		);
 	}
+
+	return { text, url, dom };
 }
 
-/**
- * Downloads the input data for a specific day of Advent of Code and saves it to a file.
- *
- * @param year - The year of the Advent of Code event.
- * @param day - The day of the Advent of Code puzzle.
- * @returns A promise that resolves when the input data has been downloaded and saved.
- *
- * @throws Will throw an error if the fetch request fails or if there is an issue writing the file.
- */
-
-export async function downloadInput(year: string, day: string) {
-	assertSessionToken();
+export async function downloadInput(year: string, day: string): Promise<void> {
 	try {
 		const downloadPath = path.resolve(getDayPath(year, day), "input.txt");
-		console.log(`Downloading input for ${year} day ${day}...`);
-		const res = await fetch(
-			`https://adventofcode.com/${year}/day/${Number(day)}/input`,
-			{
-				headers: { Cookie: `session=${Bun.env.AOC_SESSION}` },
-			},
-		);
-
-		if (!res.ok) {
-			throw new Error(
-				`Fetching data ${year}-${day} failed: ${res.status} ${res.statusText}`,
-			);
-		}
-
-		const text = await res.text();
-		await writeFile(downloadPath, text);
+		console.log(`Downloading input...`);
+		const { text } = await fetchAoCResource(year, day, "/input");
+		await ensureDirectory(downloadPath);
+		await Bun.write(downloadPath, text);
 	} catch (error) {
 		if (error instanceof Error) {
 			console.error(error.message);
-		} else {
-			console.log("Unknown problem:", error);
+			throw error;
 		}
+		throw new Error("Unknown problem occurred while downloading input");
 	}
 }
 
-/**
- * Downloads the puzzle for a given year and day from the Advent of Code website and saves it as a markdown file.
- *
- * @param year - The year of the puzzle to download.
- * @param day - The day of the puzzle to download.
- * @throws Will throw an error if the fetch request fails or if the puzzle HTML cannot be parsed.
- */
-export async function downloadPuzzle(year: string, day: string) {
-	assertSessionToken();
+export async function downloadPuzzle(year: string, day: string): Promise<void> {
 	try {
+		console.log(`Downloading puzzle...`);
 		const downloadPath = path.resolve(getDayPath(year, day), "puzzle.md");
-		const url = `https://adventofcode.com/${year}/day/${Number(day)}`;
-		const res = await fetch(url, { headers: { Cookie: `session=${Bun.env.AOC_SESSION}` } });
+		const { dom, url } = await fetchAoCResource(year, day, "");
+		const { content } = await Defuddle(dom, url, { markdown: true });
+		const file = await unified()
+			.use(remarkParse)
+			.use(remarkStringify)
+			.use(remarkUnlink)
+			.use(remarkNormalizeHeadings)
+			.use(remarkFrontmatter, ["yaml"])
+			.use(addFrontmatterPlugin, {
+				data: { url, date: `${year}-${day.padStart(2, "0")}` },
+			})
+			.process(content);
 
-		if (!res.ok) {
-			throw new Error(
-				`Fetching puzzle for ${year}-${day} failed: ${res.status} ${res.statusText}`,
-			);
-		}
-		const doc = new JSDOM(await res.text(), { url });
-		const reader = new Readability(doc.window.document);
-		const td = new Turndown({ headingStyle: "atx", codeBlockStyle: "fenced" });
-		td.addRule("Remove links", {
-			filter: ["a"],
-			replacement: (content) => content,
-		});
-		const html = reader.parse();
-
-		if (html) {
-			const md = td
-				.turndown(html.content)
-				.replace(/\\?---/g, "")
-				.replace(/##\s+/g, "## ")
-				.replace(/^##/g, "#");
-			await writeFile(downloadPath, md);
-		} else {
-			throw new Error("Failed to parse puzzle html.");
-		}
+		await ensureDirectory(downloadPath);
+		await Bun.write(
+			downloadPath,
+			String(file).replace(/^(#{1,6}\s+)---\s*(.*?)\s*---\s*$/gm, "$1$2\n"),
+		);
 	} catch (error) {
 		if (error instanceof Error) {
 			console.error(error.message);
-		} else {
-			console.log("Unknown problem:", error);
+			throw error;
+		}
+		throw new Error("Unknown problem occurred while downloading puzzle");
+	}
+}
+
+function extractTextFromNode(node: unknown): string {
+	if (typeof node === "string") {
+		return node;
+	}
+	if (node && typeof node === "object" && "type" in node) {
+		if (
+			node.type === "text" &&
+			"value" in node &&
+			typeof node.value === "string"
+		) {
+			return node.value;
+		}
+		if ("children" in node && Array.isArray(node.children)) {
+			return node.children.map(extractTextFromNode).join("");
 		}
 	}
+	return "";
+}
+
+function addFrontmatterPlugin(options: { data: Record<string, unknown> }) {
+	return (tree: Root) => {
+		const firstHeading = tree.children.find(
+			(child): child is Heading => child.type === "heading",
+		);
+
+		if (firstHeading) {
+			const title = extractTextFromNode(firstHeading).trim();
+			if (title) {
+				options.data.title = title
+					.replace(/^#+\s*/, "")
+					.replace(/---/g, "")
+					.replace(/Day \d+:/, "")
+					.trim();
+			}
+		}
+
+		const yamlString = stringifyYaml(options.data).trim();
+
+		const newNode: Yaml = {
+			type: "yaml",
+			value: yamlString,
+		};
+
+		if (tree.children.length > 0 && tree.children[0].type === "yaml") {
+			tree.children[0] = newNode;
+		} else {
+			tree.children.unshift(newNode);
+		}
+	};
 }

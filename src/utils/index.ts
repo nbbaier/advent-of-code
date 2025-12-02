@@ -1,7 +1,8 @@
 import fs from "node:fs";
 import path from "node:path";
-import type { ReplacerFn } from "@/types";
+import { Eta } from "eta";
 
+export * from "./cli-helpers";
 export * from "./solutions";
 
 /**
@@ -26,84 +27,21 @@ export function getDayPath(year: string, day: string): string {
 }
 
 /**
- * Replaces all occurrences of a specified string or regular expression in the input string with a replacement string.
+ * Asynchronously creates a file from an Eta template.
  *
- * @param input - The input string in which to perform the replacements.
- * @param rule - An object containing the pattern to match (`in`) and the replacement string (`out`).
- *   - `in`: The string or regular expression to be replaced.
- *   - `out`: The string to replace the matched pattern with.
- * @returns The modified string with all replacements made.
+ * @param template - The name of the template file (without extension) located in the "./aoc/templates" directory.
+ * @param targetPath - The path where the generated file should be written.
+ * @param context - An object containing variables to pass to the template.
+ * @returns A promise that resolves when the file has been written.
  */
-function defaultReplacer(
-	input: string,
-	rule: { in: string | RegExp; out: string },
-): string {
-	return input.replaceAll(rule.in, rule.out);
-}
+export async function createFromTemplate<
+	TContext extends Record<string, unknown>,
+>(template: string, targetPath: string, context?: TContext): Promise<void> {
+	const eta = new Eta({
+		views: path.resolve(import.meta.dirname, "../templates"),
+		autoEscape: false,
+	});
 
-/**
- * Asynchronously creates a file from a template, replacing variables and applying custom replacers.
- *
- * @param {string} template - The name of the template file (without extension) located in the "./aoc/templates" directory.
- * @param {string} targetPath - The path where the generated file should be written.
- * @param {Object} [variables] - An optional object containing key-value pairs for variable replacements in the template.
- * @param {Object[]} [replacers] - An optional array of replacer objects to apply custom replacements.
- * @param {Object} replacers[].rule - The rule for the replacement, containing an `in` pattern (string or RegExp) and an `out` string.
- * @param {string | RegExp} replacers[].rule.in - The pattern to search for in the template text.
- * @param {string} replacers[].rule.out - The string to replace the pattern with.
- * @param {Function} [replacers[].fn] - An optional custom replacer function. If not provided, a default replacer function is used.
- *
- * @returns {Promise<void>} A promise that resolves when the file has been written.
- */
-export async function createFromTemplate(
-	template: string,
-	targetPath: string,
-	variables?: {
-		[key: string]: string;
-	},
-	replacers?: {
-		rule: { in: string | RegExp; out: string };
-		fn?: ReplacerFn;
-	}[],
-): Promise<void> {
-	const templateText = loadFile(
-		path.resolve("./aoc/templates", `${template}.template.ts`),
-	);
-	if (!variables) {
-		await Bun.write(targetPath, templateText);
-		return;
-	}
-
-	let output = templateText;
-
-	for (const variable of Object.entries(variables)) {
-		const [k, v] = variable;
-		const regex = new RegExp(`<%${k}%>`, "g");
-		output = output.replaceAll(regex, v);
-	}
-
-	if (replacers) {
-		for (const replacer of replacers) {
-			const { rule, fn = defaultReplacer } = replacer;
-			output = fn(output, rule);
-		}
-	}
-
+	const output = eta.render(template, context || {});
 	await Bun.write(targetPath, output);
-	return;
-}
-
-/**
- * Retrieves the current run mode of the application.
- *
- * This function checks if the `Bun` environment is defined. If it is, it returns the `MODE` from `Bun.env`.
- * Otherwise, it returns the `MODE` from `process.env`.
- *
- * @returns {string} The current run mode of the application. When run under vitest, will always return "test"
- */
-export function getRunMode(): string {
-	if (typeof Bun !== "undefined" && Bun.env && Bun.env.MODE) {
-		return Bun.env.MODE;
-	}
-	return process.env.MODE;
 }

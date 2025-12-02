@@ -8,11 +8,15 @@ import type { TestData, TestMap } from "../types";
  * @returns A map where each key is either the name of the test data object or a string
  *          representation of its input and output, and each value is the corresponding test data object.
  */
-export function createTestMap(examples: TestData[]): TestMap {
+export function createTestMap(
+	examples: TestData[],
+	options?: { warnOnZero?: boolean },
+): TestMap {
 	const testMap: TestMap = new Map();
+	const warnOnZero = options?.warnOnZero ?? false;
 
 	for (const obj of examples) {
-		if (obj.output === 0) {
+		if (warnOnZero && obj.output === 0) {
 			console.warn(
 				`\x1b[33m⚠ Warning: Test "${obj.name || "unnamed"}" has output: 0 (placeholder value)\x1b[0m`,
 			);
@@ -34,13 +38,17 @@ export function createTestMap(examples: TestData[]): TestMap {
 export function createTestSet(
 	testMap: TestMap,
 	solution: {
-		p1: (input: string) => string | number;
-		p2: (input: string) => string | number;
+		p1?: (input: string) => string | number;
+		p2?: (input: string) => string | number;
 	},
 	part: "p1" | "p2",
 ) {
+	const partFn = solution[part];
+	if (!partFn) {
+		throw new Error(`Solution part ${part} is not defined`);
+	}
 	return test.each([...testMap.keys()])("%s", (key) => {
 		const { input, output } = testMap.get(key) as TestData;
-		expect(solution[part](input)).toEqual(output);
+		expect(partFn(input)).toEqual(output);
 	});
 }
