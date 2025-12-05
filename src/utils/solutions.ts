@@ -1,3 +1,5 @@
+import type { Point } from "@/types";
+
 /**
  * Generates an array of arrays, each missing one element from the original array.
  *
@@ -89,8 +91,6 @@ export function repeatedSubstring(s: string): boolean {
 	return (s + s).slice(1, -1).includes(s);
 }
 
-import type { Point } from "@/types";
-
 /**
  * Checks if the given coordinates (x, y) are out of the bounds of a grid.
  *
@@ -109,19 +109,38 @@ export function checkOutOfBounds(
 	return x < 0 || x >= cols || y < 0 || y >= rows;
 }
 
-export function getNeighbors(current: Point): Point[] {
-	return [
-		[0, -1], //
-		[0, 1],
-		[1, 0],
-		[-1, 0],
-	].map(([dx, dy]) => ({ x: current.x + dx, y: current.y + dy }));
+export function getNeighbors(
+	current: Point,
+	diagonal: boolean = false,
+): Point[] {
+	const directions = diagonal
+		? [
+				[-1, -1],
+				[0, -1],
+				[1, -1],
+				[-1, 0],
+				[1, 0],
+				[-1, 1],
+				[0, 1],
+				[1, 1],
+			]
+		: [
+				[0, -1],
+				[0, 1],
+				[1, 0],
+				[-1, 0],
+			];
+
+	return directions.map(([dx, dy]) => ({
+		x: current.x + dx,
+		y: current.y + dy,
+	}));
 }
 
 export function createGrid(
 	input: string,
 	fn: (cell: string) => boolean = (_cell) => true,
-) {
+): Map<string, string> {
 	const data: string[][] = input
 		.trim()
 		.split("\n")
@@ -141,8 +160,4 @@ export function createGrid(
 	}
 
 	return grid;
-}
-
-export function extractPoint(key: string): Point {
-	return { x: Number(key.split(",")[0]), y: Number(key.split(",")[1]) };
 }
