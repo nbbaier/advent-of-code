@@ -25,6 +25,7 @@ export function buildDayPaths(year: string, day: string) {
 		test: path.resolve(dayPath, `day${day}.test.ts`),
 		sample: path.resolve(dayPath, "sample.txt"),
 		input: path.resolve(dayPath, "input.txt"),
+		scratch: path.resolve(dayPath, "scratch.ts"),
 	};
 }
 
