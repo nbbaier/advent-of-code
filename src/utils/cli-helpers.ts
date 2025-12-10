@@ -48,7 +48,7 @@ export async function runSolution(
 	const end = performance.now();
 
 	console.log({ p1, p2 });
-	if (showTiming) {
-		console.log(`\nTime: ${end - start}ms`);
-	}
+	// if (showTiming) {
+	console.log(`\nTime: ${end - start}ms`);
+	// }
 }

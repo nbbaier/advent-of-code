@@ -1,5 +1,4 @@
 import type { Point } from "@/types";
-
 /**
  * Generates an array of arrays, each missing one element from the original array.
  *
@@ -160,4 +159,39 @@ export function createGrid(
 	}
 
 	return grid;
+}
+
+export function* createPairs<T>(arr: T[]): Generator<[T, T]> {
+	for (let i = 0; i < arr.length; i++) {
+		for (let j = i + 1; j < arr.length; j++) {
+			yield [arr[i], arr[j]];
+		}
+	}
+}
+
+/**
+ * Creates an iterator that returns consecutive, overlapping pairs from an iterable.
+ * Available natively in Python 3.10+ as itertools.pairwise().
+ *
+ * @param iterable The input array or iterable to pair up.
+ * @returns A generator that yields [T, T] tuples (arrays).
+ */
+export function* pairwise<T>(iterable: Iterable<T>): Generator<[T, T]> {
+	const iterator = iterable[Symbol.iterator]();
+	let prev = iterator.next();
+
+	if (prev.done) {
+		// If the input is empty, return immediately
+		return;
+	}
+
+	let curr = iterator.next();
+	while (!curr.done) {
+		// Yield the pair of [previous, current]
+		yield [prev.value, curr.value];
+
+		// Shift values for the next iteration
+		prev = curr;
+		curr = iterator.next();
+	}
 }
