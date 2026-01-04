@@ -12,6 +12,7 @@
 		"watch": "vitest watch"
 	},
 	"dependencies": {
+		"@dagrejs/graphlib": "^2.2.4",
 		"@types/jsdom": "^21.1.7",
 		"commander": "^14.0.2",
 		"defuddle": "^0.6.6",

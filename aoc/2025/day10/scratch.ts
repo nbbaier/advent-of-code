@@ -1,92 +1,121 @@
-function getCombinations<T>(array: T[], n: number): T[][] {
-	const result: T[][] = [];
+import { addMaps, mapsAreEqual, Queue } from "@/utils/queue";
 
-	if (n === 0) return [[]];
-	if (n > array.length) return [];
-	if (n === array.length) return [array];
+type JoltageMap = Map<number, number>;
+type Machine = ReturnType<typeof createMachine>;
 
-	function backtrack(start: number, current: T[]): void {
-		if (current.length === n) {
-			result.push([...current]);
-			return;
-		}
-
-		for (let i = start; i <= array.length - (n - current.length); i++) {
-			current.push(array[i]);
-			backtrack(i + 1, current);
-			current.pop();
-		}
-	}
-
-	backtrack(0, []);
-	return result;
-}
-
-const input: string = `[.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}
+const input = `[.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}
 [...#.] (0,2,3,4) (2,3) (0,4) (0,1,2) (1,2,3,4) {7,5,12,7,2}
 [.###.#] (0,1,2,3,4) (0,3,4) (0,1,2,4,5) (1,2) {10,11,11,5,10,5}`;
 
-interface Machine {
-	initialState: string[];
-	targetState: string[];
-	buttons: number[][];
-	joltage: string | number[];
+function createMachine(input: string[]) {
+	const btnStrs = input
+		.slice(1, -1)
+		.map((btn) => btn.replace(/\(|\)/g, "").split(",").map(Number) as number[]);
+
+	const buttons = btnStrs.map((btn) => new Map(btn.map((index) => [index, 1])));
+
+	const jStr =
+		input.at(-1)?.replace("{", "").replace("}", "").split(",").map(Number) ??
+		[];
+
+	return {
+		buttons,
+		targetJoltages: new Map(jStr.map((j, i) => [i, j])),
+		initialJoltages: new Map(jStr.map((_, i) => [i, 0])),
+		targetStr: jStr.join(","),
+	};
 }
 
-const data: Machine[] = input
+const machines = input
 	.trim()
 	.split("\n")
-	.map((l) => l.split(" "))
-	.map((l) => ({
-		initialState: new Array(l[0].length - 2).fill(".") as string[],
-		targetState: l[0].split("").slice(1, -1) as string[],
-		buttons: l
-			.slice(1, -1)
-			.map((btn) =>
-				btn.replace(/\(|\)/g, "").split(",").map(Number),
-			) as number[][],
-		joltage: l.at(-1) as string,
-	}));
+	.map((line) => line.split(" "))
+	.map(createMachine);
 
-const applyBtn = (btn: number[], initialState: string[]) => {
-	const state = initialState;
-	for (const i of btn) {
-		state[i] = state[i] === "." ? "#" : ".";
+function step(
+	queue: Queue<{ joltages: JoltageMap; distance: number }>,
+	visited: string[],
+	machine: Machine,
+	debug: boolean = false,
+) {
+	const { targetJoltages } = machine;
+	const targetValues = [...targetJoltages.values()];
+
+	if (debug) {
+		console.log("------");
+		console.log("initial state =", queue.getState());
+		console.log("------");
 	}
-	return state;
-};
 
-let total = 0;
-for (const machine of data) {
-	const { buttons, targetState, initialState } = machine;
-	let comboLength = 1;
-	let targetReached = false;
-	console.log(`b: ${buttons.length}`);
-	console.log(`i: ${machine.initialState.join("")}`);
-	console.log(`t: ${machine.targetState.join("")}`);
-	while (!targetReached) {
-		console.log("--------------------------------");
-		console.log(`evaluating combo length: ${comboLength}`);
-		console.log("--------------------------------");
-		for (const combo of getCombinations(buttons, comboLength)) {
-			let state = [...initialState];
-			for (const btn of combo) {
-				state = applyBtn(btn, state);
-			}
-			if (state.join("") === targetState.join("")) {
-				targetReached = true;
-			}
-			console.log(
-				`combo: ${JSON.stringify(combo)} | state: ${state.join("")} | targetReached: ${targetReached}`,
-			);
-			if (targetReached) {
-				total += comboLength;
-				break;
-			}
+	// dequeue state + distance
+	const next = queue.dequeue();
+	if (!next) return undefined;
+	const { joltages, distance } = next;
+
+	// check if equals target, if yes, return distance
+	const success = mapsAreEqual(joltages, targetJoltages);
+
+	if (debug) {
+		console.log("target reached? =", success);
+		console.log("------");
+	}
+
+	if (success) return distance;
+
+	// compute new states
+	const { buttons } = machine;
+	for (const btn of buttons) {
+		if (debug) {
+			console.log(`pressing button:`, btn);
 		}
-		console.log(`target reached: ${targetReached}`);
-		comboLength++;
+		const newJoltages = addMaps(joltages, btn);
+		if (debug) {
+			console.log("new state: ", newJoltages);
+		}
+		const newJoltagesStr = [...newJoltages.values()].join(",");
+
+		const isVisited = visited.includes(newJoltagesStr);
+		if (debug) {
+			console.log("not in visited =", !isVisited);
+		}
+
+		const notExceeds = [...newJoltages.values()]
+			.map((j, i) => {
+				return j <= targetValues[i];
+			})
+			.every((t) => t);
+		if (debug) {
+			console.log("doesn't exceed =", notExceeds);
+			console.log("add to queue =", !isVisited && notExceeds);
+		}
+
+		if (!isVisited && notExceeds) {
+			queue.enqueue({ joltages: newJoltages, distance: distance + 1 });
+			visited.push(newJoltagesStr);
+		}
+		if (debug) {
+			console.log("visited =", visited);
+		}
 	}
 }
 
-console.log(total);
+const machine = machines[0];
+
+const queue = new Queue<{ joltages: JoltageMap; distance: number }>({
+	initialState: [{ joltages: machine.initialJoltages, distance: 0 }],
+});
+const visited = [[...machine.initialJoltages.values()].join(",")];
+
+let stop = false;
+let stepCount = 1;
+while (!stop) {
+	console.log(`step ${stepCount}:`, queue.size());
+	const result = step(queue, visited, machine);
+	if (result === undefined) {
+		console.log("no result");
+		stepCount++;
+	} else {
+		console.log("result:", result);
+		stop = true;
+	}
+}

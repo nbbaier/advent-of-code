@@ -6,7 +6,7 @@ import { createTestMap, createTestSet } from "@/utils/test";
 import solution from "./index";
 
 const year = "2025";
-const day = "10";
+const day = "11";
 const dayPath = getDayPath(year, day);
 
 const examples1: TestData[] = [
@@ -27,11 +27,11 @@ const examples2: TestData[] = [
 const testMap1: TestMap = createTestMap(examples1);
 const testMap2: TestMap = createTestMap(examples2);
 
-describe("day 10 part 1", () => {
+describe("day 11 part 1", () => {
 	createTestSet(testMap1, solution, "p1");
 });
 
-describe("day 10 part 2", () => {
+describe("day 11 part 2", () => {
 	createTestSet(testMap2, solution, "p2");
 });
-``;
+
