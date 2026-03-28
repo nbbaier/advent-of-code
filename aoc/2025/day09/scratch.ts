@@ -32,7 +32,7 @@ function main() {
 	const tiles: Point[] = input
 		.trim()
 		.split("\n")
-		.map((p) => p.split(",").map(Number))
+		.map((p) => p.split(",").map(Number) as [number, number])
 		.map(([x, y]) => ({ x, y }));
 
 	const corners = Array.from(createPairs(tiles));
