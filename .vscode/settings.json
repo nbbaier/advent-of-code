@@ -5,6 +5,7 @@
     "**/aoc/**/*.txt": "${dirname(1)}-${dirname} ${filename}",
     "**/src/**/*.ts": "${dirname} ${filename}"
   },
+  "biome.enabled": false,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnPaste": true,
   "editor.formatOnSave": true,
