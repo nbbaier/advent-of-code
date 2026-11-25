@@ -13,10 +13,10 @@ import type { Cardinal, DirectionSet, Point } from "@/types";
  * @type {Omit<DirectionSet, "ur" | "dl" | "dr" | "ul">}
  */
 const directions: Omit<DirectionSet, "ur" | "dl" | "dr" | "ul"> = {
-	r: { dx: 1, dy: 0 }, // Move right: increase x by 1
-	l: { dx: -1, dy: 0 }, // Move left: decrease x by 1
-	d: { dx: 0, dy: 1 }, // Move down: increase y by 1
-	u: { dx: 0, dy: -1 }, // Move up: decrease y by 1
+  r: { dx: 1, dy: 0 }, // Move right: increase x by 1
+  l: { dx: -1, dy: 0 }, // Move left: decrease x by 1
+  d: { dx: 0, dy: 1 }, // Move down: increase y by 1
+  u: { dx: 0, dy: -1 }, // Move up: decrease y by 1
 };
 
 /**
@@ -28,9 +28,9 @@ const directions: Omit<DirectionSet, "ur" | "dl" | "dr" | "ul"> = {
  * @property {Point[]} visited - An array of points that the guard has visited.
  */
 interface GuardState {
-	position: Point;
-	facing: Cardinal;
-	visited: Point[];
+  position: Point;
+  facing: Cardinal;
+  visited: Point[];
 }
 
 /**
@@ -42,9 +42,9 @@ interface GuardState {
  * @property {string} raw - The raw string representation of the cell.
  */
 interface Cell {
-	coord: Point;
-	obstacle: boolean;
-	raw: string;
+  coord: Point;
+  obstacle: boolean;
+  raw: string;
 }
 
 /**
@@ -56,10 +56,10 @@ interface Cell {
  * @property {number} dimensions.cols - The number of columns in the lab.
  * @property {Map<string, Cell>} cells - A map of cell identifiers to Cell objects.
  */
-type Lab = {
-	dimensions: { rows: number; cols: number };
-	cells: Map<string, Cell>;
-};
+interface Lab {
+  dimensions: { rows: number; cols: number };
+  cells: Map<string, Cell>;
+}
 
 /**
  * Creates a Lab object from a given grid.
@@ -69,22 +69,22 @@ type Lab = {
  * @returns {Lab} The created Lab object.
  */
 function createLab({ grid }: { grid: string[][] }): Lab {
-	const lab: Lab = {
-		dimensions: { rows: grid.length, cols: grid[0].length },
-		cells: new Map<string, Cell>(),
-	};
-	for (let y = 0; y < grid.length; y++) {
-		const row = grid[y];
-		for (let x = 0; x < row.length; x++) {
-			const key = `${x},${y}`;
-			lab.cells.set(key, {
-				coord: { x, y },
-				obstacle: row[x] === "#",
-				raw: row[x],
-			});
-		}
-	}
-	return lab;
+  const lab: Lab = {
+    dimensions: { rows: grid.length, cols: grid[0].length },
+    cells: new Map<string, Cell>(),
+  };
+  for (let y = 0; y < grid.length; y++) {
+    const row = grid[y];
+    for (let x = 0; x < row.length; x++) {
+      const key = `${x},${y}`;
+      lab.cells.set(key, {
+        coord: { x, y },
+        obstacle: row[x] === "#",
+        raw: row[x],
+      });
+    }
+  }
+  return lab;
 }
 
 /**
@@ -98,12 +98,12 @@ function createLab({ grid }: { grid: string[][] }): Lab {
  * @returns {GuardState} The initial state of the guard, including position, visited cells, and facing direction.
  */
 function initializeGuard(lab: Lab): GuardState {
-	const [key, _] = Array.from(lab.cells.entries()).find(
-		([_, cell]) => cell.raw === "^",
-	) as [string, Cell];
-	const [x, y] = key.split(",").map(Number);
-	const startPoint = { x, y };
-	return { position: startPoint, visited: [], facing: "u" };
+  const [key, _] = [...lab.cells.entries()].find(
+    ([_, cell]) => cell.raw === "^"
+  ) as [string, Cell];
+  const [x, y] = key.split(",").map(Number);
+  const startPoint = { x, y };
+  return { position: startPoint, visited: [], facing: "u" };
 }
 
 /**
@@ -121,70 +121,70 @@ function initializeGuard(lab: Lab): GuardState {
  * @throws Will throw an error if the guard's facing direction is invalid.
  */
 function takeTurn(
-	guard: GuardState,
-	lab: Lab,
+  guard: GuardState,
+  lab: Lab
 ): {
-	guard: GuardState;
-	lab: Lab;
-	on: boolean;
+  guard: GuardState;
+  lab: Lab;
+  on: boolean;
 } {
-	const startPoint = guard.position;
-	const startKey = `${startPoint.x},${startPoint.y}`;
-	const startCell = lab.cells.get(startKey) as Cell;
-	const direction = directions[guard.facing as keyof typeof directions];
+  const startPoint = guard.position;
+  const startKey = `${startPoint.x},${startPoint.y}`;
+  const startCell = lab.cells.get(startKey) as Cell;
+  const direction = directions[guard.facing as keyof typeof directions];
 
-	if (!direction) {
-		throw new Error(`Invalid facing direction: ${guard.facing}`);
-	}
+  if (!direction) {
+    throw new Error(`Invalid facing direction: ${guard.facing}`);
+  }
 
-	const newPoint = {
-		x: startPoint.x + direction.dx,
-		y: startPoint.y + direction.dy,
-	};
-	const newKey = `${newPoint.x},${newPoint.y}`;
-	const nextCell = lab.cells.get(newKey);
+  const newPoint = {
+    x: startPoint.x + direction.dx,
+    y: startPoint.y + direction.dy,
+  };
+  const newKey = `${newPoint.x},${newPoint.y}`;
+  const nextCell = lab.cells.get(newKey);
 
-	// Handle three possible scenarios:
-	// 1. Guard would move off the lab
-	if (typeof nextCell === "undefined") {
-		guard.visited.push(startCell.coord);
-		return { guard, lab, on: false };
-	}
+  // Handle three possible scenarios:
+  // 1. Guard would move off the lab
+  if (nextCell === undefined) {
+    guard.visited.push(startCell.coord);
+    return { guard, lab, on: false };
+  }
 
-	// 2. Next cell is empty - move forward
-	if (!nextCell.obstacle) {
-		guard.visited.push(startCell.coord);
-		guard.position = newPoint;
-		return { guard, lab, on: true };
-	}
+  // 2. Next cell is empty - move forward
+  if (!nextCell.obstacle) {
+    guard.visited.push(startCell.coord);
+    guard.position = newPoint;
+    return { guard, lab, on: true };
+  }
 
-	// 3. Hit an obstacle - rotate 90 degrees clockwise
-	guard.facing = rightTurnMap.get(guard.facing) as Cardinal;
-	return { guard, lab, on: true };
+  // 3. Hit an obstacle - rotate 90 degrees clockwise
+  guard.facing = rightTurnMap.get(guard.facing) as Cardinal;
+  return { guard, lab, on: true };
 }
 
 function part1(input: string): number | string {
-	const grid = input
-		.trim()
-		.split("\n")
-		.map((line) => line.split(""));
+  const grid = input
+    .trim()
+    .split("\n")
+    .map((line) => line.split(""));
 
-	let labState = createLab({ grid });
-	let guardState = initializeGuard(labState);
-	let onState = true;
+  let labState = createLab({ grid });
+  let guardState = initializeGuard(labState);
+  let onState = true;
 
-	while (onState) {
-		const turnOutcome = takeTurn(guardState, labState);
-		labState = turnOutcome.lab;
-		guardState = turnOutcome.guard;
-		onState = turnOutcome.on;
-	}
+  while (onState) {
+    const turnOutcome = takeTurn(guardState, labState);
+    labState = turnOutcome.lab;
+    guardState = turnOutcome.guard;
+    onState = turnOutcome.on;
+  }
 
-	return new Set(guardState.visited.map((p) => `${p.x},${p.y}`)).size;
+  return new Set(guardState.visited.map((p) => `${p.x},${p.y}`)).size;
 }
 
 function part2(_input: string) {
-	return "not implemented";
+  return "not implemented";
 }
 
 export default { p1: part1, p2: part2 };

@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+
 import { Eta } from "eta";
 
 export * from "./cli-helpers";
@@ -12,7 +13,7 @@ export * from "./solutions";
  * @returns The content of the file as a string.
  */
 export function loadFile(filePath: string) {
-	return fs.readFileSync(filePath).toString();
+  return fs.readFileSync(filePath).toString();
 }
 
 /**
@@ -23,7 +24,7 @@ export function loadFile(filePath: string) {
  * @returns The file path string for the specified day's challenge.
  */
 export function getDayPath(year: string, day: string): string {
-	return `./aoc/${year}/day${day.padStart(2, "0")}`;
+  return `./aoc/${year}/day${day.padStart(2, "0")}`;
 }
 
 /**
@@ -35,13 +36,13 @@ export function getDayPath(year: string, day: string): string {
  * @returns A promise that resolves when the file has been written.
  */
 export async function createFromTemplate<
-	TContext extends Record<string, unknown>,
+  TContext extends Record<string, unknown>,
 >(template: string, targetPath: string, context?: TContext): Promise<void> {
-	const eta = new Eta({
-		views: path.resolve(import.meta.dirname, "../templates"),
-		autoEscape: false,
-	});
+  const eta = new Eta({
+    views: path.resolve(import.meta.dirname, "../templates"),
+    autoEscape: false,
+  });
 
-	const output = eta.render(template, context || {});
-	await Bun.write(targetPath, output);
+  const output = eta.render(template, context || {});
+  await Bun.write(targetPath, output);
 }

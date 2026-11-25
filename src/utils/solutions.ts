@@ -7,9 +7,9 @@ import type { Point } from "@/types";
  * @returns {T[][]} An array of arrays, each with one element removed from the original array.
  */
 export function dropOne<T>(arr: T[]): T[][] {
-	return arr.map((_, index) =>
-		arr.filter((_, filterIndex) => filterIndex !== index),
-	);
+  return arr.map((_, index) =>
+    arr.filter((_, filterIndex) => filterIndex !== index)
+  );
 }
 
 /**
@@ -20,10 +20,10 @@ export function dropOne<T>(arr: T[]): T[][] {
  * @returns {number | null} The middle index of the array, or null if the array is empty.
  */
 export function getMiddleIndex<T>(arr: T[]): number | null {
-	if (arr.length === 0) {
-		return null;
-	}
-	return Math.floor(arr.length / 2);
+  if (arr.length === 0) {
+    return null;
+  }
+  return Math.floor(arr.length / 2);
 }
 
 /**
@@ -33,7 +33,7 @@ export function getMiddleIndex<T>(arr: T[]): number | null {
  * @returns A promise that resolves after the specified delay.
  */
 export const delay = (ms: number) =>
-	new Promise((resolve) => setTimeout(resolve, ms));
+  new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
  * Checks if an array contains an object matching specific keys.
@@ -45,11 +45,11 @@ export const delay = (ms: number) =>
  * @returns True if a matching object is found.
  */
 export function includesObject<T extends object>(
-	arr: T[],
-	obj: T,
-	keys: (keyof T)[] = Object.keys(obj) as (keyof T)[],
+  arr: T[],
+  obj: T,
+  keys: (keyof T)[] = Object.keys(obj) as (keyof T)[]
 ): boolean {
-	return arr.some((item) => keys.every((key) => item[key] === obj[key]));
+  return arr.some((item) => keys.every((key) => item[key] === obj[key]));
 }
 
 /**
@@ -60,13 +60,13 @@ export function includesObject<T extends object>(
  * @returns The removed element, or undefined if the set is empty.
  */
 export function popFromSet<T>(set: Set<T>): T | undefined {
-	if (set.size < 1) {
-		return undefined;
-	}
-	const items = Array.from(set);
-	const item = items[Math.floor(Math.random() * items.length)];
-	set.delete(item);
-	return item;
+  if (set.size < 1) {
+    return undefined;
+  }
+  const items = [...set];
+  const item = items[Math.floor(Math.random() * items.length)];
+  set.delete(item);
+  return item;
 }
 
 /**
@@ -77,7 +77,7 @@ export function popFromSet<T>(set: Set<T>): T | undefined {
  * @returns An array of numbers from start to end.
  */
 export function range(start: number, end: number): number[] {
-	return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 }
 
 /**
@@ -87,7 +87,7 @@ export function range(start: number, end: number): number[] {
  * @returns {boolean}True if the string is a repeated substring.
  */
 export function repeatedSubstring(s: string): boolean {
-	return (s + s).slice(1, -1).includes(s);
+  return (s + s).slice(1, -1).includes(s);
 }
 
 /**
@@ -100,73 +100,73 @@ export function repeatedSubstring(s: string): boolean {
  * @returns `true` if the coordinates are out of bounds, `false` otherwise.
  */
 export function checkOutOfBounds(
-	x: number,
-	y: number,
-	rows: number,
-	cols: number,
+  x: number,
+  y: number,
+  rows: number,
+  cols: number
 ): boolean {
-	return x < 0 || x >= cols || y < 0 || y >= rows;
+  return x < 0 || x >= cols || y < 0 || y >= rows;
 }
 
 export function getNeighbors(
-	current: Point,
-	diagonal: boolean = false,
+  current: Point,
+  diagonal: boolean = false
 ): Point[] {
-	const directions = diagonal
-		? [
-				[-1, -1],
-				[0, -1],
-				[1, -1],
-				[-1, 0],
-				[1, 0],
-				[-1, 1],
-				[0, 1],
-				[1, 1],
-			]
-		: [
-				[0, -1],
-				[0, 1],
-				[1, 0],
-				[-1, 0],
-			];
+  const directions = diagonal
+    ? [
+        [-1, -1],
+        [0, -1],
+        [1, -1],
+        [-1, 0],
+        [1, 0],
+        [-1, 1],
+        [0, 1],
+        [1, 1],
+      ]
+    : [
+        [0, -1],
+        [0, 1],
+        [1, 0],
+        [-1, 0],
+      ];
 
-	return directions.map(([dx, dy]) => ({
-		x: current.x + dx,
-		y: current.y + dy,
-	}));
+  return directions.map(([dx, dy]) => ({
+    x: current.x + dx,
+    y: current.y + dy,
+  }));
 }
 
 export function createGrid(
-	input: string,
-	fn: (cell: string) => boolean = (_cell) => true,
+  input: string,
+  fn: (cell: string) => boolean = (_cell) => true
 ): Map<string, string> {
-	const data: string[][] = input
-		.trim()
-		.split("\n")
-		.map((line) => line.split(""));
+  const data: string[][] = input
+    .trim()
+    .split("\n")
+    .map((line) => line.split(""));
 
-	const grid = new Map<string, string>();
+  const grid = new Map<string, string>();
 
-	for (let y = 0; y < data.length; y++) {
-		for (let x = 0; x < data[0].length; x++) {
-			const key = `${x},${y}`;
-			const value = data[y][x];
+  for (let y = 0; y < data.length; y++) {
+    for (let x = 0; x < data[0].length; x++) {
+      const key = `${x},${y}`;
+      const value = data[y][x];
 
-			if (fn(value)) {
-				grid.set(key, value);
-			}
-		}
-	}
+      if (fn(value)) {
+        grid.set(key, value);
+      }
+    }
+  }
 
-	return grid;
+  return grid;
 }
 
 export function* createPairs<T>(arr: T[]): Generator<[T, T]> {
-	for (let i = 0; i < arr.length; i++) {
-		for (let j = i + 1; j < arr.length; j++) {
-			yield [arr[i], arr[j]];
-		}
-	}
+  for (let i = 0; i < arr.length; i++) {
+    for (let j = i + 1; j < arr.length; j++) {
+      yield [arr[i], arr[j]];
+    }
+  }
 }
 
 /**
@@ -177,21 +177,21 @@ export function* createPairs<T>(arr: T[]): Generator<[T, T]> {
  * @returns A generator that yields [T, T] tuples (arrays).
  */
 export function* pairwise<T>(iterable: Iterable<T>): Generator<[T, T]> {
-	const iterator = iterable[Symbol.iterator]();
-	let prev = iterator.next();
+  const iterator = iterable[Symbol.iterator]();
+  let prev = iterator.next();
 
-	if (prev.done) {
-		// If the input is empty, return immediately
-		return;
-	}
+  if (prev.done) {
+    // If the input is empty, return immediately
+    return;
+  }
 
-	let curr = iterator.next();
-	while (!curr.done) {
-		// Yield the pair of [previous, current]
-		yield [prev.value, curr.value];
+  let curr = iterator.next();
+  while (!curr.done) {
+    // Yield the pair of [previous, current]
+    yield [prev.value, curr.value];
 
-		// Shift values for the next iteration
-		prev = curr;
-		curr = iterator.next();
-	}
+    // Shift values for the next iteration
+    prev = curr;
+    curr = iterator.next();
+  }
 }

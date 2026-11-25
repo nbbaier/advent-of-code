@@ -2,9 +2,9 @@
  * Represents the test data used for testing purposes.
  */
 export interface TestData {
-	name?: string;
-	input: string;
-	output: string | number;
+  name?: string;
+  input: string;
+  output: string | number;
 }
 
 /**
@@ -18,10 +18,10 @@ export type TestMap = Map<string, TestData>;
  * @property {number} x - The x-coordinate of the point.
  * @property {number} y - The y-coordinate of the point.
  */
-export type Point = {
-	x: number;
-	y: number;
-};
+export interface Point {
+  x: number;
+  y: number;
+}
 
 /**
  * Represents a velocity with horizontal and vertical components.
@@ -29,14 +29,17 @@ export type Point = {
  * @property {number} dx - The change in the x-direction (horizontal).
  * @property {number} dy - The change in the y-direction (vertical).
  */
-export type Velocity = { dx: number; dy: number };
+export interface Velocity {
+  dx: number;
+  dy: number;
+}
 
 /**
  * Represents a game board with a specified number of rows and columns.
  */
 export interface Board {
-	rows: number;
-	cols: number;
+  rows: number;
+  cols: number;
 }
 
 /**
@@ -45,10 +48,10 @@ export interface Board {
  * @property {number} dx - The change in the x-axis direction.
  * @property {number} dy - The change in the y-axis direction.
  */
-export type Direction = {
-	dx: number;
-	dy: number;
-};
+export interface Direction {
+  dx: number;
+  dy: number;
+}
 
 /**
  * Represents a direction label.
@@ -72,9 +75,7 @@ type DirLabel = "r" | "l" | "d" | "u" | "ur" | "dl" | "dr" | "ul";
  * @template K - The label of the direction, constrained to `DirLabel`.
  * @template Direction - The type representing a direction.
  */
-export type DirectionSet = {
-	[K in DirLabel]?: Direction;
-};
+export type DirectionSet = Partial<Record<DirLabel, Direction>>;
 
 /**
  * Represents the cardinal directions by omitting the diagonal directions

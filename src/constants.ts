@@ -11,22 +11,22 @@ import type { Cardinal } from "./types";
  * - "<" corresponds to moving left (-1, 0)
  */
 export const arrowDirections = new Map<string, number[]>([
-	["^", [0, -1]],
-	["v", [0, 1]],
-	[">", [1, 0]],
-	["<", [-1, 0]],
+  ["^", [0, -1]],
+  ["v", [0, 1]],
+  [">", [1, 0]],
+  ["<", [-1, 0]],
 ]);
 
-export const rightTurnMap: Map<Cardinal, Cardinal> = new Map([
-	["u", "r"],
-	["r", "d"],
-	["d", "l"],
-	["l", "u"],
+export const rightTurnMap = new Map<Cardinal, Cardinal>([
+  ["u", "r"],
+  ["r", "d"],
+  ["d", "l"],
+  ["l", "u"],
 ]);
 
-export const leftTurnMap: Map<Cardinal, Cardinal> = new Map([
-	["u", "l"],
-	["l", "d"],
-	["d", "r"],
-	["r", "u"],
+export const leftTurnMap = new Map<Cardinal, Cardinal>([
+  ["u", "l"],
+  ["l", "d"],
+  ["d", "r"],
+  ["r", "u"],
 ]);
