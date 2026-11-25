@@ -34,7 +34,7 @@ export function buildDayPaths(year: string, day: string) {
 export async function runSolution(
   runnerPath: string,
   inputPath: string,
-  showTiming: boolean
+  _showTiming: boolean
 ): Promise<void> {
   const runner = (await import(runnerPath)) as {
     default: {
