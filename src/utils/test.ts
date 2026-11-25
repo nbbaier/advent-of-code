@@ -1,4 +1,5 @@
 import { expect, test } from "vitest";
+
 import type { TestData, TestMap } from "../types";
 
 /**
@@ -9,23 +10,23 @@ import type { TestData, TestMap } from "../types";
  *          representation of its input and output, and each value is the corresponding test data object.
  */
 export function createTestMap(
-	examples: TestData[],
-	options?: { warnOnZero?: boolean },
+  examples: TestData[],
+  options?: { warnOnZero?: boolean }
 ): TestMap {
-	const testMap: TestMap = new Map();
-	const warnOnZero = options?.warnOnZero ?? false;
+  const testMap: TestMap = new Map();
+  const warnOnZero = options?.warnOnZero ?? false;
 
-	for (const obj of examples) {
-		if (warnOnZero && obj.output === 0) {
-			console.warn(
-				`\x1b[33m⚠ Warning: Test "${obj.name || "unnamed"}" has output: 0 (placeholder value)\x1b[0m`,
-			);
-		}
-		const testKey = obj.name ? obj.name : `${obj.input} = ${obj.output}`;
-		testMap.set(testKey, obj);
-	}
+  for (const obj of examples) {
+    if (warnOnZero && obj.output === 0) {
+      console.warn(
+        `\u001B[33m⚠ Warning: Test "${obj.name || "unnamed"}" has output: 0 (placeholder value)\u001B[0m`
+      );
+    }
+    const testKey = obj.name ? obj.name : `${obj.input} = ${obj.output}`;
+    testMap.set(testKey, obj);
+  }
 
-	return testMap;
+  return testMap;
 }
 
 /**
@@ -36,19 +37,19 @@ export function createTestMap(
  * @param part - Specifies which part of the solution to test, either "p1" or "p2".
  */
 export function createTestSet(
-	testMap: TestMap,
-	solution: {
-		p1?: (input: string) => string | number;
-		p2?: (input: string) => string | number;
-	},
-	part: "p1" | "p2",
+  testMap: TestMap,
+  solution: {
+    p1?: (input: string) => string | number;
+    p2?: (input: string) => string | number;
+  },
+  part: "p1" | "p2"
 ) {
-	const partFn = solution[part];
-	if (!partFn) {
-		throw new Error(`Solution part ${part} is not defined`);
-	}
-	return test.each([...testMap.keys()])("%s", (key) => {
-		const { input, output } = testMap.get(key) as TestData;
-		expect(partFn(input)).toEqual(output);
-	});
+  const partFn = solution[part];
+  if (!partFn) {
+    throw new Error(`Solution part ${part} is not defined`);
+  }
+  return test.each([...testMap.keys()])("%s", (key) => {
+    const { input, output } = testMap.get(key) as TestData;
+    expect(partFn(input)).toEqual(output);
+  });
 }

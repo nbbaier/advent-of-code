@@ -10,28 +10,27 @@ const day = "<%= it.day %>";
 const dayPath = getDayPath(year, day);
 
 const examples1: TestData[] = [
-	{
-		name: "tests for p1",
-		input: loadFile(path.resolve(dayPath, "sample.txt")),
-		output: 0,
-	},
+  {
+    name: "tests for p1",
+    input: loadFile(path.resolve(dayPath, "sample.txt")),
+    output: 0,
+  },
 ];
 const examples2: TestData[] = [
-	{
-		name: "tests for p2",
-		input: loadFile(path.resolve(dayPath, "sample.txt")),
-		output: 0,
-	},
+  {
+    name: "tests for p2",
+    input: loadFile(path.resolve(dayPath, "sample.txt")),
+    output: 0,
+  },
 ];
 
 const testMap1: TestMap = createTestMap(examples1);
 const testMap2: TestMap = createTestMap(examples2);
 
 describe("day <%= it.day %> part 1", () => {
-	createTestSet(testMap1, solution, "p1");
+  createTestSet(testMap1, solution, "p1");
 });
 
 describe("day <%= it.day %> part 2", () => {
-	createTestSet(testMap2, solution, "p2");
+  createTestSet(testMap2, solution, "p2");
 });
-

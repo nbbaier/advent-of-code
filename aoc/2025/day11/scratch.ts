@@ -15,49 +15,49 @@ ggg: out
 hhh: out`;
 
 const data = input
-	.trim()
-	.split("\n")
-	.map((l) => {
-		const [node, edges] = l.split(":");
-		return { node, edges: edges.trim().split(" ") };
-	});
+  .trim()
+  .split("\n")
+  .map((l) => {
+    const [node, edges] = l.split(":");
+    return { node, edges: edges.trim().split(" ") };
+  });
 
 const g = new Graph({ directed: true });
 
 for (const { node, edges } of data) {
-	for (const edge of edges) {
-		g.setEdge(node, edge);
-	}
+  for (const edge of edges) {
+    g.setEdge(node, edge);
+  }
 }
 
 function findAllPaths(graph: Graph, start: string, end: string): string[][] {
-	const paths: string[][] = [];
-	const visited = new Set<string>();
+  const paths: string[][] = [];
+  const visited = new Set<string>();
 
-	function dfs(current: string, path: string[]) {
-		if (current === end) {
-			paths.push([...path, current]);
-			return;
-		}
+  function dfs(current: string, path: string[]) {
+    if (current === end) {
+      paths.push([...path, current]);
+      return;
+    }
 
-		visited.add(current);
-		path.push(current);
+    visited.add(current);
+    path.push(current);
 
-		const successors = graph.successors(current) || [];
-		for (const next of successors) {
-			if (!visited.has(next)) {
-				dfs(next, path);
-			}
-		}
+    const successors = graph.successors(current) || [];
+    for (const next of successors) {
+      if (!visited.has(next)) {
+        dfs(next, path);
+      }
+    }
 
-		path.pop();
-		visited.delete(current);
-	}
+    path.pop();
+    visited.delete(current);
+  }
 
-	dfs(start, []);
-	return paths;
+  dfs(start, []);
+  return paths;
 }
 
 for (const path of findAllPaths(g, "svr", "out")) {
-	console.log(JSON.stringify(path));
+  console.log(JSON.stringify(path));
 }

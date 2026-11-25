@@ -12,30 +12,30 @@ import { checkOutOfBounds } from "@/utils";
  * @returns `true` if "XMAS" is found in the grid starting from the given point and moving in the specified direction, otherwise `false`.
  */
 export function checkXMAS(
-	grid: string[][],
-	start: Point,
-	dir: Direction,
-	rows: number,
-	cols: number,
+  grid: string[][],
+  start: Point,
+  dir: Direction,
+  rows: number,
+  cols: number
 ): boolean {
-	const target = "XMAS";
+  const target = "XMAS";
 
-	const endX = start.x + dir.dx;
-	const endY = start.y + dir.dy;
+  const endX = start.x + dir.dx;
+  const endY = start.y + dir.dy;
 
-	if (checkOutOfBounds(endX, endY, rows, cols)) {
-		return false;
-	}
-	for (let i = 0; i < target.length; i++) {
-		const currentX = start.x + dir.dx * i;
-		const currentY = start.y + dir.dy * i;
-		if (checkOutOfBounds(currentX, currentY, rows, cols)) {
-			return false;
-		}
-		if (grid[currentY][currentX] !== target[i]) {
-			return false;
-		}
-	}
+  if (checkOutOfBounds(endX, endY, rows, cols)) {
+    return false;
+  }
+  for (let i = 0; i < target.length; i++) {
+    const currentX = start.x + dir.dx * i;
+    const currentY = start.y + dir.dy * i;
+    if (checkOutOfBounds(currentX, currentY, rows, cols)) {
+      return false;
+    }
+    if (grid[currentY][currentX] !== target[i]) {
+      return false;
+    }
+  }
 
-	return true;
+  return true;
 }

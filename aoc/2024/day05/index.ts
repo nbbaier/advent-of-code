@@ -1,11 +1,12 @@
 import toposort from "toposort";
+
 import { getMiddleIndex } from "@/utils";
 
 function parse(input: string) {
-	const contents = input.trim().split("\n\n");
-	const rules = contents[0].split("\n");
-	const updates = contents[1].split("\n").map((update) => update.split(","));
-	return { rules, updates };
+  const contents = input.trim().split("\n\n");
+  const rules = contents[0].split("\n");
+  const updates = contents[1].split("\n").map((update) => update.split(","));
+  return { rules, updates };
 }
 
 /**
@@ -16,13 +17,13 @@ function parse(input: string) {
  * @returns A boolean indicating whether all non-null rule results are true.
  */
 function validateUpdate(update: string[], rules: string[]) {
-	const ruleResults = [];
+  const ruleResults = [];
 
-	for (const rule of rules) {
-		const res = checkOrder(update, rule);
-		ruleResults.push(res);
-	}
-	return ruleResults.filter((r) => r !== null).every(Boolean);
+  for (const rule of rules) {
+    const res = checkOrder(update, rule);
+    ruleResults.push(res);
+  }
+  return ruleResults.filter((r) => r !== null).every(Boolean);
 }
 
 /**
@@ -36,60 +37,60 @@ function validateUpdate(update: string[], rules: string[]) {
  *          or `null` if either element is not found in the array.
  */
 function checkOrder(arr: string[], rule: string): boolean | null {
-	const [first, second] = rule.split("|");
-	if (!arr.includes(first) || !arr.includes(second)) {
-		return null;
-	}
-	return arr.indexOf(first) < arr.indexOf(second);
+  const [first, second] = rule.split("|");
+  if (!arr.includes(first) || !arr.includes(second)) {
+    return null;
+  }
+  return arr.indexOf(first) < arr.indexOf(second);
 }
 
 function part1(input: string): number | string {
-	const { rules, updates } = parse(input);
+  const { rules, updates } = parse(input);
 
-	return updates
-		.filter((update) => {
-			return validateUpdate(update, rules);
-		})
-		.map((update) => {
-			const i = getMiddleIndex(update) as number;
-			return update[i];
-		})
-		.reduce((acc, curr) => {
-			return acc + (curr !== null ? Number.parseInt(curr, 10) : 0);
-		}, 0);
+  return updates
+    .filter((update) => validateUpdate(update, rules))
+    .map((update) => {
+      const i = getMiddleIndex(update) as number;
+      return update[i];
+    })
+    .reduce(
+      (acc, curr) => acc + (curr === null ? 0 : Number.parseInt(curr, 10)),
+      0
+    );
 }
 
 function part2(input: string): number | string {
-	const { rules, updates } = parse(input);
+  const { rules, updates } = parse(input);
 
-	const incorrect = updates
-		.filter((update) => !validateUpdate(update, rules))
-		.map((update) => {
-			return rules.filter((rule) => {
-				const [first, second] = rule.split("|");
-				return update.includes(first) && update.includes(second);
-			});
-		});
+  const incorrect = updates
+    .filter((update) => !validateUpdate(update, rules))
+    .map((update) =>
+      rules.filter((rule) => {
+        const [first, second] = rule.split("|");
+        return update.includes(first) && update.includes(second);
+      })
+    );
 
-	const corrected = incorrect
-		.map((update) => {
-			const graph: [string, string][] = update.map((rule) => {
-				const [from, to] = rule.split("|");
-				return [from, to];
-			});
+  const corrected = incorrect
+    .map((update) => {
+      const graph: [string, string][] = update.map((rule) => {
+        const [from, to] = rule.split("|");
+        return [from, to];
+      });
 
-			return graph;
-		})
-		.map((graph) => toposort(graph));
+      return graph;
+    })
+    .map((graph) => toposort(graph));
 
-	return corrected
-		.map((update) => {
-			const i = getMiddleIndex(update) as number;
-			return update[i];
-		})
-		.reduce((acc, curr) => {
-			return acc + (curr !== null ? Number.parseInt(curr, 10) : 0);
-		}, 0);
+  return corrected
+    .map((update) => {
+      const i = getMiddleIndex(update) as number;
+      return update[i];
+    })
+    .reduce(
+      (acc, curr) => acc + (curr === null ? 0 : Number.parseInt(curr, 10)),
+      0
+    );
 }
 
 export default { p1: part1, p2: part2 };
