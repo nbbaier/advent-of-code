@@ -10,7 +10,7 @@
     "refresh": "bun src/index.ts refresh",
     "check": "vitest run",
     "watch": "vitest watch",
-    "fix": "ultracite fix"
+    "fix": "bun --bun ultracite fix"
   },
   "dependencies": {
     "@dagrejs/graphlib": "^4.0.1",

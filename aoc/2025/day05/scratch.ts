@@ -9,9 +9,10 @@ function mergeRanges(ranges: number[][]): [number, number][] {
   // Merge overlapping ranges
   const merged: [number, number][] = [];
   for (const [start, end] of sorted) {
-    if (merged.length && start <= merged.at(-1)[1] + 1) {
+    const last = merged.at(-1);
+    if (last && start <= last[1] + 1) {
       // Overlapping or adjacent - merge
-      merged.at(-1)[1] = Math.max(merged.at(-1)[1], end);
+      last[1] = Math.max(last[1], end);
     } else {
       // Non-overlapping - add new range
       merged.push([start, end]);

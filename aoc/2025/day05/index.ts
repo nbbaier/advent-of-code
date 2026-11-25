@@ -5,8 +5,9 @@ function mergeRanges(ranges: number[][]): number[][] {
   const sorted = ranges.sort((a, b) => a[0] - b[0]);
   const merged: [number, number][] = [];
   for (const [start, end] of sorted) {
-    if (merged.length && start <= merged.at(-1)[1] + 1) {
-      merged.at(-1)[1] = Math.max(merged.at(-1)[1], end);
+    const last = merged.at(-1);
+    if (last && start <= last[1] + 1) {
+      last[1] = Math.max(last[1], end);
     } else {
       merged.push([start, end]);
     }
