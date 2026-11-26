@@ -3,7 +3,6 @@ import path from "node:path";
 
 import { Eta } from "eta";
 
-export * from "./cli-helpers";
 export * from "./solutions";
 
 /**
